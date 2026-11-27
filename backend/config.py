@@ -28,6 +28,12 @@ class Settings(BaseModel):
     gemini_model: str = Field(
         default_factory=lambda: os.getenv("GEMINI_MODEL", "gemini-2.0-flash").strip()
     )
+    openrouter_api_key: str = Field(
+        default_factory=lambda: os.getenv("OPENROUTER_API_KEY", "").strip()
+    )
+    openrouter_model: str = Field(
+        default_factory=lambda: os.getenv("OPENROUTER_MODEL", "openrouter/free").strip()
+    )
     waqi_api_token: str = Field(default_factory=lambda: os.getenv("WAQI_API_TOKEN", "").strip())
     openweather_api_key: str = Field(
         default_factory=lambda: os.getenv("OPENWEATHER_API_KEY", "").strip()
@@ -56,6 +62,11 @@ class Settings(BaseModel):
     def has_gemini(self) -> bool:
         """Return True when a Gemini API key is configured."""
         return bool(self.gemini_api_key)
+
+    @property
+    def has_openrouter(self) -> bool:
+        """Return True when an OpenRouter API key is configured."""
+        return bool(self.openrouter_api_key)
 
     @property
     def has_waqi(self) -> bool:

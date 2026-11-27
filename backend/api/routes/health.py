@@ -12,12 +12,20 @@ router = APIRouter(tags=["health"])
 async def health_check(request: Request) -> HealthCheckResponse:
     """Return service liveness, version, and external API configuration status."""
     settings: Settings = request.app.state.settings
+    if settings.has_openrouter:
+        llm_status = f"openrouter ({settings.openrouter_model})"
+    elif settings.has_gemini:
+        llm_status = f"gemini ({settings.gemini_model})"
+    else:
+        llm_status = "rule-engine-fallback"
+
     return HealthCheckResponse(
         status="ok",
         version=settings.app_version,
         environment=settings.app_env,
         services={
-            "gemini": "configured" if settings.has_gemini else "rule-engine-fallback",
+            "llm": llm_status,
+            "gemini": "configured" if settings.has_gemini else "fallback",
             "aqi": "waqi+open-meteo" if settings.has_waqi else "open-meteo-live",
             "weather": (
                 "openweathermap+open-meteo"

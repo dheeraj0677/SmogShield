@@ -1,14 +1,14 @@
 # Automated Testing & Verification Report — SmogShield
 
-**Total Verified Passing Tests:** **78 / 78 (100% Passing)**  
-**Backend Statement Coverage:** **91%** (`1,513` statements across backend)
+**Total Verified Passing Tests:** **80 / 80 (100% Passing)**  
+**Backend Statement Coverage:** **91%** (`1,623` statements across backend)
 
 ---
 
 ## 1. Backend Verification (`Pytest` + `Ruff`)
 
 - **Linter**: `ruff check .` — **0 errors**
-- **Test Runner**: `pytest --cov=. --cov-report=term-missing` — **60 / 60 passed** (`1.22s`)
+- **Test Runner**: `pytest --cov=. --cov-report=term-missing` — **62 / 62 passed** (`0.87s`)
 
 | Test File | Focus | Tests | Coverage Highlights |
 |---|---|---|---|
@@ -17,7 +17,7 @@
 | `backend/tests/test_security.py` | Security headers (`CSP`, `COOP`, `nosniff`, `DENY`), sliding-window rate limit (`429`), `16 KB` cap (`413`), JSON guard (`415`), CORS, SHA-256 AI cache | 6 | `api/middleware/security.py` (97%), `rate_limiter.py` (94%) |
 | `backend/tests/test_aqi_service.py` | Open-Meteo & OpenWeatherMap mock HTTP parsing, TTL caching, `404` unknown city, offline baseline fallback, API routes | 5 | `services/weather_service.py` (86%) |
 | `backend/tests/test_recommendation.py` | Sensitive household risk adjustment, DIY box-fan vs HEPA optimization, daily schedule generation | 5 | `services/recommendation_engine.py` (100%) |
-| `backend/tests/test_chat.py` | Grounded `/api/chat`, Gemini error fallback, XSS rejection (`422`), prompt-leak guard | 5 | `services/gemini_service.py` (83%) |
+| `backend/tests/test_chat.py` | Grounded `/api/chat`, OpenRouter `:free`-only enforcement & null fallback, Gemini fallback, XSS rejection (`422`), prompt-leak guard | 7 | `services/gemini_service.py` (87%) |
 
 ---
 

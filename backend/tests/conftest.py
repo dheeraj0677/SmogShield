@@ -50,11 +50,24 @@ def make_snapshot(
     )
 
 
+@pytest.fixture(autouse=True)
+def _isolate_env_keys(monkeypatch: pytest.MonkeyPatch):
+    """Prevent local .env API keys from causing live external API calls in tests."""
+    for var in (
+        "OPENROUTER_API_KEY",
+        "GEMINI_API_KEY",
+        "WAQI_API_TOKEN",
+        "OPENWEATHER_API_KEY",
+    ):
+        monkeypatch.delenv(var, raising=False)
+
+
 @pytest.fixture
 def test_settings() -> Settings:
     """Return isolated settings without external API keys."""
     return Settings(
         gemini_api_key="",
+        openrouter_api_key="",
         waqi_api_token="",
         openweather_api_key="",
         app_env="test",

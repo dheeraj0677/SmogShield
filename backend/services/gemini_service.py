@@ -1,8 +1,9 @@
-"""Google Gemini GenAI conversational service with context injection and rule-based fallback."""
+"""LLM conversational service supporting OpenRouter free models, Gemini, and rule fallback."""
 
 import asyncio
 import logging
 
+import httpx
 from google import genai
 from google.genai import types
 
@@ -20,6 +21,26 @@ from services.recommendation_engine import RecommendationEngine
 from utils.validators import detect_prompt_injection, neutralize_prompt_injection
 
 logger = logging.getLogger(__name__)
+
+_OPENROUTER_FREE_FALLBACKS = (
+    "google/gemma-4-26b-a4b-it:free",
+    "google/gemma-4-31b-it:free",
+    "openrouter/free",
+    "nvidia/nemotron-3.5-lightning:free",
+)
+
+
+def resolve_free_openrouter_model(model_id: str) -> str:
+    """Enforce free-tier-only OpenRouter models (:free suffix or openrouter/free)."""
+    cleaned = (model_id or "").strip()
+    if cleaned == "openrouter/free" or cleaned.endswith(":free"):
+        return cleaned
+    logger.warning(
+        "Non-free OpenRouter model '%s' blocked by free-models-only policy; "
+        "using openrouter/free.",
+        cleaned,
+    )
+    return "openrouter/free"
 
 _SYSTEM_INSTRUCTION = """You are SmogShield, an expert, empathetic urban air quality advisor
 helping families and communities navigate severe winter smog and urban air pollution.
@@ -90,9 +111,22 @@ class GeminiService:
                 return cached_reply.model_copy(update={"aqi_snapshot": aqi_snapshot})
 
         ai_provider = "smogshield-rule-engine"
-        reply_text: str
+        reply_text: str | None = None
 
-        if self._settings.has_gemini:
+        if self._settings.has_openrouter:
+            or_reply, used_model = await self._call_openrouter(
+                safe_message=safe_message,
+                aqi_snapshot=aqi_snapshot,
+                profile=profile,
+                rec_package=rec_package,
+                top_recs=top_recs,
+                history=history or [],
+            )
+            if or_reply and not self._contains_prompt_leak(or_reply):
+                reply_text = or_reply
+                ai_provider = f"openrouter ({used_model})"
+
+        if reply_text is None and self._settings.has_gemini:
             gemini_reply = await self._call_gemini(
                 safe_message=safe_message,
                 aqi_snapshot=aqi_snapshot,
@@ -104,11 +138,8 @@ class GeminiService:
             if gemini_reply and not self._contains_prompt_leak(gemini_reply):
                 reply_text = gemini_reply
                 ai_provider = f"gemini ({self._settings.gemini_model})"
-            else:
-                reply_text = self._build_fallback_reply(
-                    safe_message, aqi_snapshot, profile, rec_package, top_recs
-                )
-        else:
+
+        if reply_text is None:
             reply_text = self._build_fallback_reply(
                 safe_message, aqi_snapshot, profile, rec_package, top_recs
             )
@@ -138,6 +169,71 @@ class GeminiService:
         """Prevent accidental leakage of internal prompt boundary delimiters."""
         markers = ("<environment_context>", "<household_profile>", "STRICT SAFETY & GROUNDING")
         return any(marker in text for marker in markers)
+
+    async def _call_openrouter(
+        self,
+        safe_message: str,
+        aqi_snapshot: AQISnapshot,
+        profile: UserProfile,
+        rec_package: RecommendationsResponse,
+        top_recs: list[RecommendationItem],
+        history: list[ChatHistoryMessage],
+        client: httpx.AsyncClient | None = None,
+    ) -> tuple[str | None, str]:
+        """Invoke OpenRouter free-tier chat completions API with multi-model fallback."""
+        enriched_prompt = self._build_enriched_prompt(
+            safe_message, aqi_snapshot, profile, rec_package, top_recs, history
+        )
+        primary = resolve_free_openrouter_model(self._settings.openrouter_model)
+        candidates = [primary] + [m for m in _OPENROUTER_FREE_FALLBACKS if m != primary]
+
+        headers = {
+            "Authorization": f"Bearer {self._settings.openrouter_api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "http://localhost:5173",
+            "X-Title": "SmogShield Urban Air Quality Assistant",
+        }
+
+        close_client = client is None
+        http_client = client or httpx.AsyncClient(timeout=self._settings.request_timeout_seconds)
+        try:
+            for model_id in candidates:
+                payload = {
+                    "model": model_id,
+                    "messages": [
+                        {"role": "system", "content": _SYSTEM_INSTRUCTION},
+                        {"role": "user", "content": enriched_prompt},
+                    ],
+                    "temperature": 0.4,
+                    "max_tokens": 700,
+                }
+                try:
+                    resp = await http_client.post(
+                        "https://openrouter.ai/api/v1/chat/completions",
+                        headers=headers,
+                        json=payload,
+                    )
+                    if resp.status_code != 200:
+                        logger.warning(
+                            "OpenRouter free model %s returned HTTP %s",
+                            model_id,
+                            resp.status_code,
+                        )
+                        continue
+                    data = resp.json()
+                    choices = data.get("choices") or []
+                    msg = (choices[0].get("message") or {}) if choices else {}
+                    raw_content = msg.get("content")
+                    content = raw_content.strip() if isinstance(raw_content, str) else ""
+                    if content:
+                        served_model = str(data.get("model") or model_id)
+                        return content, served_model
+                except (httpx.HTTPError, ValueError, TypeError, KeyError) as exc:
+                    logger.warning("OpenRouter call failed for %s: %s", model_id, exc)
+            return None, primary
+        finally:
+            if close_client:
+                await http_client.aclose()
 
     async def _call_gemini(
         self,
