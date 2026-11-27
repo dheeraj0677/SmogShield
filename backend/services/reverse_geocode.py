@@ -59,3 +59,40 @@ async def reverse_geocode(
         pass
 
     return None
+
+
+def _is_public_ip(ip: str | None) -> bool:
+    """Return True if the IP string looks like a non-private, non-loopback address."""
+    if not ip:
+        return False
+    cleaned = ip.strip()
+    if cleaned in {"127.0.0.1", "::1", "localhost", "testclient"}:
+        return False
+    return not cleaned.startswith(("10.", "192.168.", "172.16.", "172.17.", "172.18."))
+
+
+async def lookup_ip_location(
+    client_ip: str | None, client: httpx.AsyncClient
+) -> tuple[float, float, str] | None:
+    """Resolve a client IP address to (latitude, longitude, city_name)."""
+    ip_segment = client_ip.strip() if _is_public_ip(client_ip) else ""
+    urls = [
+        f"https://ipwho.is/{ip_segment}",
+        f"https://ipapi.co/{ip_segment}/json/" if ip_segment else "https://ipapi.co/json/",
+    ]
+    for url in urls:
+        try:
+            resp = await client.get(url, headers={"User-Agent": "SmogShield/1.0"})
+            if resp.status_code != 200:
+                continue
+            data = resp.json()
+            if data.get("success") is False or data.get("error"):
+                continue
+            lat = data.get("latitude")
+            lon = data.get("longitude")
+            city = str(data.get("city") or data.get("region") or "").strip()
+            if isinstance(lat, (int, float)) and isinstance(lon, (int, float)):
+                return float(lat), float(lon), city or "Your Location"
+        except (httpx.HTTPError, ValueError, TypeError):
+            continue
+    return None

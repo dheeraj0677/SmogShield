@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MapPin, Search } from 'lucide-react';
 import { POPULAR_CITIES } from '../../utils/constants.js';
 import { sanitizeDisplayCity } from '../../utils/accessibility.js';
 
 export function CitySearchBar({ city, onCityChange, onUseGeolocation, locating }) {
   const [query, setQuery] = useState(city);
+
+  useEffect(() => {
+    setQuery(city);
+  }, [city]);
 
   const handleSubmit = (event) => {
     event.preventDefault();

@@ -31,6 +31,10 @@ export async function fetchAQIByCoordinates(lat, lon) {
   );
 }
 
+export async function fetchAQIByIP() {
+  return requestJson('/api/aqi/ip-location');
+}
+
 export async function fetchRecommendations(userProfile) {
   return requestJson('/api/recommendations', {
     method: 'POST',

@@ -4,6 +4,8 @@ export function useGeolocation() {
   const [locating, setLocating] = useState(false);
   const [geoError, setGeoError] = useState(null);
 
+  const clearGeoError = useCallback(() => setGeoError(null), []);
+
   const requestCoordinates = useCallback(() => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -29,10 +31,10 @@ export function useGeolocation() {
           setGeoError(msg);
           reject(new Error(msg));
         },
-        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
       );
     });
   }, []);
 
-  return { locating, geoError, requestCoordinates };
+  return { locating, geoError, setGeoError, clearGeoError, requestCoordinates };
 }

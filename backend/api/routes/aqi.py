@@ -1,11 +1,35 @@
 """Air Quality Index endpoints."""
 
+import httpx
 from fastapi import APIRouter, HTTPException, Query, Request
 
 from models.schemas import AQISnapshot
 from services.aqi_service import AQIService, CityNotFoundError, ExternalServiceError
+from services.reverse_geocode import lookup_ip_location
 
 router = APIRouter(prefix="/aqi", tags=["aqi"])
+
+
+@router.get("/ip-location", response_model=AQISnapshot)
+async def get_aqi_by_ip(request: Request) -> AQISnapshot:
+    """Return live AQI snapshot using IP-based geolocation fallback."""
+    forwarded = request.headers.get("x-forwarded-for", "")
+    client_ip = forwarded.split(",")[0].strip() if forwarded else (
+        request.client.host if request.client else None
+    )
+    aqi_service: AQIService = request.app.state.aqi_service
+    async with httpx.AsyncClient(timeout=8.0) as client:
+        loc = await lookup_ip_location(client_ip, client)
+    if loc is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Unable to determine approximate location from IP address.",
+        )
+    lat, lon, city_label = loc
+    try:
+        return await aqi_service.get_aqi_by_coordinates(lat, lon, label=city_label)
+    except ExternalServiceError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get("/coordinates", response_model=AQISnapshot)

@@ -39,9 +39,10 @@ export default function App() {
     error,
     refresh,
     loadByCoordinates,
+    loadByIP,
   } = useAQI(userProfile);
 
-  const { locating, geoError, requestCoordinates } = useGeolocation();
+  const { locating, geoError, clearGeoError, requestCoordinates } = useGeolocation();
   const { messages, sending, chatError, sendMessage, clearChat } = useChat(
     userProfile.city,
     userProfile
@@ -67,7 +68,12 @@ export default function App() {
         handleCityChange(snapshot.resolved_city);
       }
     } catch {
-      // Error surfaced via geoError banner
+      // Browser GPS denied, unavailable, or timed out — fall back to IP-based location
+      const ipSnapshot = await loadByIP(userProfile);
+      if (ipSnapshot?.resolved_city) {
+        clearGeoError();
+        handleCityChange(ipSnapshot.resolved_city);
+      }
     }
   };
 

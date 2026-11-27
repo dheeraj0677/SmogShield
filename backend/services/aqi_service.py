@@ -115,11 +115,13 @@ class AQIService:
                 )
             if snapshot is None:
                 snapshot = await fetch_open_meteo_aqi(
-                    display_name, display_name, "", latitude, longitude, self._weather_service, http_client
+                    display_name, display_name, "", latitude, longitude,
+                    self._weather_service, http_client,
                 )
             if snapshot is None:
                 raise ExternalServiceError(
-                    f"Unable to retrieve air quality data for coordinates ({latitude}, {longitude})."
+                    "Unable to retrieve air quality data for coordinates "
+                    f"({latitude}, {longitude})."
                 )
             snapshot = snapshot.model_copy(update={"resolved_city": display_name})
             self._cache.set(cache_key, snapshot)
