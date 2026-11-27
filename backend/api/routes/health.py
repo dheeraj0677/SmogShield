@@ -19,6 +19,12 @@ async def health_check(request: Request) -> HealthCheckResponse:
     else:
         llm_status = "rule-engine-fallback"
 
+    aqi_sources = ["open-meteo-live"]
+    if settings.has_google_aqi:
+        aqi_sources.insert(0, "google-air-quality")
+    if settings.has_waqi:
+        aqi_sources.insert(0, "waqi")
+
     return HealthCheckResponse(
         status="ok",
         version=settings.app_version,
@@ -26,7 +32,8 @@ async def health_check(request: Request) -> HealthCheckResponse:
         services={
             "llm": llm_status,
             "gemini": "configured" if settings.has_gemini else "fallback",
-            "aqi": "waqi+open-meteo" if settings.has_waqi else "open-meteo-live",
+            "google_air_quality": "configured" if settings.has_google_aqi else "ready",
+            "aqi": "+".join(aqi_sources),
             "weather": (
                 "openweathermap+open-meteo"
                 if settings.has_openweather

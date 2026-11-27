@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-0f766e.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776ab.svg)](backend/requirements.txt)
 [![React 18 + Vite](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-0ea5e9.svg)](frontend/package.json)
-[![Tests: 83 Passing](https://img.shields.io/badge/Tests-83%20%2F%2083%20Passing-15803d.svg)](docs/TESTING.md)
+[![Tests: 84 Passing](https://img.shields.io/badge/Tests-84%20%2F%2084%20Passing-15803d.svg)](docs/TESTING.md)
 
 **SmogShield** is a GenAI-powered public-health and urban air quality advisor built for **PromptWars Challenge 6: Urban Air Quality Assistant**. It helps families, sensitive households, and commuters navigate severe winter smog episodes with live multi-pollutant telemetry, context-aware daily routines, room-level air filtration sizing, lowest-exposure commute routing, and quantified CO₂ and PM2.5 impact tracking.
 
@@ -30,12 +30,15 @@
 **Vertical:** `[Challenge 6] Urban Air Quality Assistant`
 
 ### The Problem Addressed
+
 During winter temperature inversions, cold stagnant air traps vehicular exhaust, residential combustion, and particulate matter (`PM2.5`, `PM10`, `NO₂`) close to ground level across urban centers (such as Delhi, Lahore, Lucknow, Dhaka, and Beijing). Standard AQI widgets show only raw index numbers and fail to answer practical household questions:
-- *When is it safe for children or older adults to step outside or ventilate rooms?*
-- *Can a family without an expensive purifier clean a bedroom on a low budget?*
-- *Which commute mode or corridor minimizes actual inhaled particulate dose, and what is the direct carbon/health impact of switching?*
+
+- _When is it safe for children or older adults to step outside or ventilate rooms?_
+- _Can a family without an expensive purifier clean a bedroom on a low budget?_
+- _Which commute mode or corridor minimizes actual inhaled particulate dose, and what is the direct carbon/health impact of switching?_
 
 ### Target Personas
+
 - **Vulnerable Families:** Households with children, older adults, or members managing asthma, COPD, allergies, or heart conditions.
 - **Urban Commuters:** Daily travelers weighing metro, car, motorbike, walking, cycling, and remote work options.
 - **Neighborhood Communities:** Local residents adopting zero-burn practices and sharing multilingual emergency advisories.
@@ -68,9 +71,9 @@ SmogShield uses a **hybrid deterministic + Generative AI architecture** so envir
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                     CLIENT — React 18 + Vite + Tailwind CSS                  │
-│                     Production Bundle: 70.47 kB JS / 7.76 kB CSS (gzip)      │
+│                     Production Bundle: 70.45 kB JS / 7.76 kB CSS (gzip)      │
 │                                                                              │
-│  • Header & Household Context Sidebar (City/GPS, Theme/High-Contrast, Aa+)   │
+│  • Header & Household Context Sidebar (City/GPS, Light/Dark Mode, Aa+)       │
 │  • Live AQI Dashboard (EPA Meter, Pollutant Grid, Inversion Risk, SVG Trend) │
 │  • Action Plans: Daily Routine │ Indoor Hacks + CADR │ Dijkstra Commute │    │
 │                  Sustainable Alternatives │ Community Pledges & RTL Alerts   │
@@ -92,6 +95,7 @@ SmogShield uses a **hybrid deterministic + Generative AI architecture** so envir
 ```
 
 ### Request Lifecycle
+
 1. **Context Selection:** The user selects a city (or uses browser GPS) and configures family size, sensitive groups, health conditions, commute mode, home type, and budget in the sidebar (persisted in `localStorage`).
 2. **Telemetry & Planning (`POST /api/recommendations`):** The backend resolves cached or live AQI + meteorology, computes sensitivity-adjusted alerts, builds a 4-window daily schedule, and quantifies cumulative `kg CO₂` saved and `% PM2.5` exposure reduction.
 3. **Interactive Solvers (`POST /api/tools/cadr`, `POST /api/tools/commute-plan`):** Users test bedroom CADR/ACH configurations or run Dijkstra lowest-exposure commute comparisons tailored to live city pollution.
@@ -113,12 +117,14 @@ SmogShield uses a **hybrid deterministic + Generative AI architecture** so envir
 ## 5. Quick Start
 
 ### Prerequisites
+
 - **Python** `3.11+`
 - **Node.js** `20+` and `npm`
 
 ### Option A: Local Development
 
 **1. Start the Backend API**
+
 ```bash
 cd backend
 python -m venv .venv
@@ -132,20 +138,25 @@ pip install -r requirements.txt
 cp .env.example .env          # Optional: add API keys (works zero-config via Open-Meteo)
 uvicorn main:app --reload --port 8000
 ```
+
 Interactive OpenAPI / Swagger docs are served at `http://localhost:8000/api/docs`.
 
 **2. Start the Frontend UI**
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+
 Open `http://localhost:5173`.
 
 ### Option B: Docker Compose
+
 ```bash
 docker compose up --build
 ```
+
 - Frontend: `http://localhost:3000`
 - Backend API: `http://localhost:8000/api/health`
 
@@ -155,18 +166,19 @@ docker compose up --build
 
 All external keys are optional—SmogShield runs out of the box using keyless Open-Meteo telemetry and its built-in rule-based response synthesizer. Copy [`backend/.env.example`](backend/.env.example) to `backend/.env` to customize:
 
-| Variable | Purpose | Default / Behavior |
-|---|---|---|
-| `OPENROUTER_API_KEY` | OpenRouter API key (`:free` models only) | Optional; preferred LLM when set |
-| `OPENROUTER_MODEL` | OpenRouter free model ID | `openrouter/free` (enforces free models only) |
-| `GEMINI_API_KEY` | Google Gemini API key | Optional; used if OpenRouter is unset; falls back to rule engine |
-| `GEMINI_MODEL` | Gemini model ID | `gemini-2.0-flash` |
-| `WAQI_API_TOKEN` | World Air Quality Index token | Optional; falls back to live keyless Open-Meteo if unset |
-| `OPENWEATHER_API_KEY` | OpenWeatherMap key | Optional; falls back to live keyless Open-Meteo if unset |
-| `CORS_ORIGINS` | Allowed frontend origins | `http://localhost:5173,http://127.0.0.1:5173` |
-| `CACHE_TTL_SECONDS` | AQI & weather cache TTL | `900` (15 minutes) |
-| `RATE_LIMIT_CHAT_PER_MIN` | Per-IP `/api/chat` limit | `30` |
-| `RATE_LIMIT_AQI_PER_MIN` | Per-IP AQI/tool route limit | `60` |
+| Variable                  | Purpose                                  | Default / Behavior                                               |
+| ------------------------- | ---------------------------------------- | ---------------------------------------------------------------- |
+| `OPENROUTER_API_KEY`      | OpenRouter API key (`:free` models only) | Optional; preferred LLM when set                                 |
+| `OPENROUTER_MODEL`           | OpenRouter free model ID                 | `google/gemma-4-26b-a4b-it:free` (enforces `:free` models only)   |
+| `GEMINI_API_KEY`             | Google Gemini API key                    | Optional; used if OpenRouter is unset; falls back to rule engine  |
+| `GEMINI_MODEL`               | Gemini model ID                          | `gemini-2.0-flash`                                                |
+| `GOOGLE_AIR_QUALITY_API_KEY` | Google Air Quality API v1 key            | Optional; used before Open-Meteo when set                         |
+| `WAQI_API_TOKEN`             | World Air Quality Index token            | Optional; falls back to Google AQI / keyless Open-Meteo if unset  |
+| `OPENWEATHER_API_KEY`     | OpenWeatherMap key                       | Optional; falls back to live keyless Open-Meteo if unset         |
+| `CORS_ORIGINS`            | Allowed frontend origins                 | `http://localhost:5173,http://127.0.0.1:5173`                    |
+| `CACHE_TTL_SECONDS`       | AQI & weather cache TTL                  | `900` (15 minutes)                                               |
+| `RATE_LIMIT_CHAT_PER_MIN` | Per-IP `/api/chat` limit                 | `30`                                                             |
+| `RATE_LIMIT_AQI_PER_MIN`  | Per-IP AQI/tool route limit              | `60`                                                             |
 
 ---
 
@@ -174,16 +186,18 @@ All external keys are optional—SmogShield runs out of the box using keyless Op
 
 Detailed reports for every evaluation focus area live in [`docs/`](docs/):
 
-| Focus Area | Summary | Verified Evidence | Documentation |
-|---|---|---|---|
-| **Problem Alignment** | Full Challenge 6 coverage | 8-requirement traceability matrix (`REQ-01`–`REQ-08`) | [docs/PROBLEM_ALIGNMENT.md](docs/PROBLEM_ALIGNMENT.md) |
-| **Code Quality** | Clean modular architecture | `ruff check .` (`0` errors), `eslint .` (`0` errors) | [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md) |
-| **Security** | OWASP Top 10 & CWE hardened | `16 KB` cap (`413`), `415` JSON guard, rate limiter (`429`), CSP/COOP, SHA-256 cache, prompt guard | [docs/SECURITY.md](docs/SECURITY.md) |
-| **Efficiency** | Lean footprint & caching | `70.47 kB` JS / `7.76 kB` CSS gzipped, GZip middleware, single-call hourly+current telemetry | [docs/EFFICIENCY.md](docs/EFFICIENCY.md) |
-| **Testing** | **83 / 83 tests passing** | `62` Pytest (`91%` coverage) + `19` Vitest + `2` Playwright Chrome E2E | [docs/TESTING.md](docs/TESTING.md) |
-| **Accessibility** | WCAG 2.1 / 2.2 AA | Light/Dark mode, `Aa+` Large Text, `.sr-only` twins, RTL Urdu, `jsx-a11y` clean | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
+| Focus Area            | Summary                     | Verified Evidence                                                                                  | Documentation                                          |
+| --------------------- | --------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| **Problem Alignment** | Full Challenge 6 coverage   | 8-requirement traceability matrix (`REQ-01`–`REQ-08`)                                              | [docs/PROBLEM_ALIGNMENT.md](docs/PROBLEM_ALIGNMENT.md) |
+| **Code Quality**      | **0 lint errors**           | `ruff check .` (`0` errors), `eslint .` (`0` errors), `<=200`-line modular files                   | [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)           |
+| **Security**          | OWASP Top 10 & CWE hardened | `16 KB` cap (`413`), `415` JSON guard, rate limiter (`429`), CSP/COOP, SHA-256 cache, `0` prod npm vulns | [docs/SECURITY.md](docs/SECURITY.md)                   |
+| **Efficiency**        | Lean footprint & caching    | `70.45 kB` JS / `7.76 kB` CSS gzipped, GZip middleware, single-call hourly+current telemetry       | [docs/EFFICIENCY.md](docs/EFFICIENCY.md)               |
+| **Testing**           | **84 / 84 tests passing**   | `63` Pytest (`92%` cov) + `19` Vitest (`90.76%` cov) + `2` Playwright + Axe Chrome E2E             | [docs/TESTING.md](docs/TESTING.md)                     |
+| **Accessibility**     | **0 axe violations**        | Verified WCAG 2.1 AA via `@axe-core/playwright`, Light/Dark mode, `Aa+`, `.sr-only` twins, RTL Urdu | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md)         |
+| **Google Services**   | Multi-service               | Google Gemini (`google-genai`), Google Air Quality API v1, Google Fonts, Gemma 4 (`:free`), Chrome | [docs/GOOGLE_SERVICES.md](docs/GOOGLE_SERVICES.md)     |
 
 ### Running Verification Commands
+
 ```bash
 # Backend lint + tests + coverage
 cd backend

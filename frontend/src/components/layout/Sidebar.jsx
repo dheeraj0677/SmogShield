@@ -24,13 +24,11 @@ export function Sidebar({ profile, onChangeProfile, openMobile, onCloseMobile })
           : 'hidden lg:sticky lg:top-20 lg:block'
       }`}
     >
-      <div className="custom-scrollbar h-full w-80 overflow-y-auto border-r border-slate-200 bg-white p-5 shadow-xl lg:max-h-[calc(100vh-6rem)] lg:w-full lg:rounded-2xl lg:border lg:shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-3 dark:border-slate-800">
+      <div className="custom-scrollbar h-full w-80 overflow-y-auto border-r border-slate-200 bg-white p-4 shadow-xl lg:max-h-[calc(100vh-6rem)] lg:w-full lg:rounded-2xl lg:border lg:shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-2 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" aria-hidden="true" />
-            <h2 className="text-base font-bold text-slate-900 dark:text-white">
-              Household Context
-            </h2>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white">Household Context</h2>
           </div>
           <button
             type="button"
@@ -41,12 +39,10 @@ export function Sidebar({ profile, onChangeProfile, openMobile, onCloseMobile })
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
-
-        <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400">
           Tailors AQI risk thresholds, daily routines, indoor hacks, and AI advice to your family.
         </p>
-
-        <div className="mt-4 space-y-4">
+        <div className="mt-3 space-y-3">
           <div>
             <label
               htmlFor="family-members-input"
@@ -60,10 +56,8 @@ export function Sidebar({ profile, onChangeProfile, openMobile, onCloseMobile })
               min={1}
               max={10}
               value={profile.family_members}
-              onChange={(e) =>
-                onChangeProfile({ ...profile, family_members: Number(e.target.value) })
-              }
-              className="mt-1.5 w-full accent-teal-600"
+              onChange={(e) => onChangeProfile({ ...profile, family_members: Number(e.target.value) })}
+              className="mt-1 w-full accent-teal-600"
             />
           </div>
 

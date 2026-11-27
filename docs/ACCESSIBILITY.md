@@ -15,6 +15,7 @@
    - Every AQI badge, smog-trapping chip, and daily schedule slot pairs color with explicit text labels (`Good`, `Moderate`, `Hazardous`, `High Risk`).
 5. **Multilingual & RTL Support**:
    - `CommunityHub.jsx` provides emergency family advisories in **English**, **Hindi (`हिन्दी`)**, **Urdu (`اردو` with automatic `dir="rtl"`)**, and **Spanish (`Español`)**.
-6. **Reduced Motion & Automated Linting**:
+6. **Reduced Motion & Verified Automated Audits**:
    - `index.css` honors `@media (prefers-reduced-motion: reduce)`.
    - `eslint-plugin-jsx-a11y` checks every JSX file with `0` warnings or errors.
+   - **`@axe-core/playwright`** runs automated WCAG 2.1 A/AA browser scans inside headless Chrome (`frontend/e2e/smoke.spec.js`) with **`0` violations**.

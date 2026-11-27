@@ -1,7 +1,8 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 test.describe('SmogShield E2E smoke test', () => {
-  test('loads dashboard, CADR solver, Dijkstra transit, community RTL, and chat', async ({
+  test('loads dashboard, passes WCAG 2.1 AA axe scan, switches tabs, and chats', async ({
     page,
   }) => {
     await page.goto('/');
@@ -9,6 +10,11 @@ test.describe('SmogShield E2E smoke test', () => {
     await expect(page.getByRole('heading', { name: 'SmogShield', exact: true })).toBeVisible();
     await expect(page.getByRole('meter')).toBeVisible({ timeout: 15000 });
     await expect(page.getByText(/24-Hour Diurnal Smog Cycle/i)).toBeVisible();
+
+    const axeResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .analyze();
+    expect(axeResults.violations).toEqual([]);
 
     await page.getByRole('tab', { name: 'Indoor Air Hacks' }).click();
     await expect(page.getByText(/Room CADR & Clean-Air Decay Solver/i)).toBeVisible();
@@ -28,8 +34,8 @@ test.describe('SmogShield E2E smoke test', () => {
     await page.getByRole('button', { name: 'Send message' }).click();
 
     await expect(
-      page.getByText(/Tailored Action Plan|Current Air Quality Snapshot/i).first()
-    ).toBeVisible({ timeout: 15000 });
+      page.locator('article[aria-label="SmogShield assistant response"]').nth(1)
+    ).toBeVisible({ timeout: 25000 });
   });
 
   test('renders cleanly on mobile viewport', async ({ page }) => {

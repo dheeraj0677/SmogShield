@@ -3,6 +3,7 @@
 ## Architectural Separation of Concerns
 
 - **Pure Domain Compute (`backend/utils/`)**: EPA AQI breakpoints (`aqi_calculator.py`), Room CADR/ACH decay math (`cadr_calculator.py`), Commute inhaled PM2.5 dose (`commute_dose.py`), Dijkstra clean-corridor pathfinder (`dijkstra_router.py`), and validators (`validators.py`) have zero framework/HTTP side effects.
+- **Modular <=200-Line Source Discipline**: All source modules in `backend/` and `frontend/src/` are strictly enforced to `<=200` lines each (`0` files over 200 lines), including `services/recommendations/` builders, `aqi_providers.py`, `llm_providers.py`, `prompt_builder.py`, `ActionPlansPanel.jsx`, and `CitySearchBar.jsx`.
 - **Service Layer (`backend/services/`)**: `AQIService`, `WeatherService`, `RecommendationEngine`, `GeminiService`, and `TTLCache` encapsulate external integrations, fallback logic, and caching.
 - **API Layer (`backend/api/`)**: Thin FastAPI routers (`routes/`) validate inputs via Pydantic v2 models (`models/schemas.py`) and delegate work to services.
 - **Modular React UI (`frontend/src/`)**: Clean separation across `hooks/`, `services/api.js`, `utils/`, and `components/{chat,dashboard,recommendations,layout,common}`.

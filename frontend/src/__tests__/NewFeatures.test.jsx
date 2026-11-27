@@ -179,7 +179,7 @@ describe('Header Accessibility Controls', () => {
     await user.click(themeBtns[0]);
     expect(onToggleDarkMode).toHaveBeenCalled();
 
-    const textBtns = screen.getAllByRole('button', { name: /Toggle large readable text/i });
+    const textBtns = screen.getAllByRole('button', { name: /Aa\+ — Toggle large readable text/i });
     await user.click(textBtns[0]);
     expect(onToggleLargeText).toHaveBeenCalled();
   });

@@ -56,6 +56,7 @@ def _isolate_env_keys(monkeypatch: pytest.MonkeyPatch):
     for var in (
         "OPENROUTER_API_KEY",
         "GEMINI_API_KEY",
+        "GOOGLE_AIR_QUALITY_API_KEY",
         "WAQI_API_TOKEN",
         "OPENWEATHER_API_KEY",
     ):
@@ -68,6 +69,7 @@ def test_settings() -> Settings:
     return Settings(
         gemini_api_key="",
         openrouter_api_key="",
+        google_air_quality_api_key="",
         waqi_api_token="",
         openweather_api_key="",
         app_env="test",

@@ -35,6 +35,9 @@ class Settings(BaseModel):
         default_factory=lambda: os.getenv("OPENROUTER_MODEL", "openrouter/free").strip()
     )
     waqi_api_token: str = Field(default_factory=lambda: os.getenv("WAQI_API_TOKEN", "").strip())
+    google_air_quality_api_key: str = Field(
+        default_factory=lambda: os.getenv("GOOGLE_AIR_QUALITY_API_KEY", "").strip()
+    )
     openweather_api_key: str = Field(
         default_factory=lambda: os.getenv("OPENWEATHER_API_KEY", "").strip()
     )
@@ -72,6 +75,11 @@ class Settings(BaseModel):
     def has_waqi(self) -> bool:
         """Return True when a WAQI API token is configured."""
         return bool(self.waqi_api_token)
+
+    @property
+    def has_google_aqi(self) -> bool:
+        """Return True when a Google Air Quality API key is configured."""
+        return bool(self.google_air_quality_api_key)
 
     @property
     def has_openweather(self) -> bool:

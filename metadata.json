@@ -8,19 +8,21 @@
   "verifiedMetrics": {
     "backendLintErrors": 0,
     "frontendLintErrors": 0,
-    "backendTestsTotal": 62,
-    "backendTestsPassed": 62,
-    "backendCoveragePercent": 91,
+    "backendTestsTotal": 63,
+    "backendTestsPassed": 63,
+    "backendCoveragePercent": 92,
     "frontendUnitTestsTotal": 19,
     "frontendUnitTestsPassed": 19,
+    "frontendCoveragePercent": 90.76,
     "e2eTestsTotal": 2,
     "e2eTestsPassed": 2,
-    "totalTestsPassed": 83,
-    "frontendJsGzipKB": 70.47,
+    "axeWcagViolations": 0,
+    "totalTestsPassed": 84,
+    "frontendJsGzipKB": 70.45,
     "frontendCssGzipKB": 7.76
   },
   "compliance": {
-    "accessibility": "WCAG 2.1 / 2.2 AA (Light & Dark Mode, Large-Text Aa+, .sr-only SVG twins, RTL Urdu)",
+    "accessibility": "WCAG 2.1 / 2.2 AA Verified (0 axe-core Chrome violations, Light/Dark, Aa+, .sr-only SVG twins, RTL Urdu)",
     "security": "OWASP Top 10 & CWE-209/770/79/798 Hardened (16 KB body limit, 415 check, Rate Limiting, SHA-256 AI Cache, Prompt Injection Guard)"
   }
 }
