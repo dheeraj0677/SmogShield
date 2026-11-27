@@ -11,13 +11,13 @@
     "backendTestsTotal": 62,
     "backendTestsPassed": 62,
     "backendCoveragePercent": 91,
-    "frontendUnitTestsTotal": 17,
-    "frontendUnitTestsPassed": 17,
+    "frontendUnitTestsTotal": 19,
+    "frontendUnitTestsPassed": 19,
     "e2eTestsTotal": 2,
     "e2eTestsPassed": 2,
-    "totalTestsPassed": 81,
-    "frontendJsGzipKB": 68.38,
-    "frontendCssGzipKB": 7.10
+    "totalTestsPassed": 83,
+    "frontendJsGzipKB": 70.61,
+    "frontendCssGzipKB": 7.85
   },
   "compliance": {
     "accessibility": "WCAG 2.1 / 2.2 AA (High-Contrast Mode, Large-Text Aa+, .sr-only SVG twins, RTL Urdu)",

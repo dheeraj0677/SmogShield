@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-0f766e.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776ab.svg)](backend/requirements.txt)
 [![React 18 + Vite](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-0ea5e9.svg)](frontend/package.json)
-[![Tests: 81 Passing](https://img.shields.io/badge/Tests-81%20%2F%2081%20Passing-15803d.svg)](docs/TESTING.md)
+[![Tests: 83 Passing](https://img.shields.io/badge/Tests-83%20%2F%2083%20Passing-15803d.svg)](docs/TESTING.md)
 
 **SmogShield** is a GenAI-powered public-health and urban air quality advisor built for **PromptWars Challenge 6: Urban Air Quality Assistant**. It helps families, sensitive households, and commuters navigate severe winter smog episodes with live multi-pollutant telemetry, context-aware daily routines, room-level air filtration sizing, lowest-exposure commute routing, and quantified CO₂ and PM2.5 impact tracking.
 
@@ -68,7 +68,7 @@ SmogShield uses a **hybrid deterministic + Generative AI architecture** so envir
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                     CLIENT — React 18 + Vite + Tailwind CSS                  │
-│                     Production Bundle: 68.38 kB JS / 7.10 kB CSS (gzip)      │
+│                     Production Bundle: 70.61 kB JS / 7.85 kB CSS (gzip)      │
 │                                                                              │
 │  • Header & Household Context Sidebar (City/GPS, Theme/High-Contrast, Aa+)   │
 │  • Live AQI Dashboard (EPA Meter, Pollutant Grid, Inversion Risk, SVG Trend) │
@@ -179,8 +179,8 @@ Detailed reports for every evaluation focus area live in [`docs/`](docs/):
 | **Problem Alignment** | Full Challenge 6 coverage | 8-requirement traceability matrix (`REQ-01`–`REQ-08`) | [docs/PROBLEM_ALIGNMENT.md](docs/PROBLEM_ALIGNMENT.md) |
 | **Code Quality** | Clean modular architecture | `ruff check .` (`0` errors), `eslint .` (`0` errors) | [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md) |
 | **Security** | OWASP Top 10 & CWE hardened | `16 KB` cap (`413`), `415` JSON guard, rate limiter (`429`), CSP/COOP, SHA-256 cache, prompt guard | [docs/SECURITY.md](docs/SECURITY.md) |
-| **Efficiency** | Lean footprint & caching | `68.38 kB` JS / `7.10 kB` CSS gzipped, GZip middleware, single-call hourly+current telemetry | [docs/EFFICIENCY.md](docs/EFFICIENCY.md) |
-| **Testing** | **81 / 81 tests passing** | `62` Pytest (`91%` coverage) + `17` Vitest + `2` Playwright Chrome E2E | [docs/TESTING.md](docs/TESTING.md) |
+| **Efficiency** | Lean footprint & caching | `70.61 kB` JS / `7.85 kB` CSS gzipped, GZip middleware, single-call hourly+current telemetry | [docs/EFFICIENCY.md](docs/EFFICIENCY.md) |
+| **Testing** | **83 / 83 tests passing** | `62` Pytest (`91%` coverage) + `19` Vitest + `2` Playwright Chrome E2E | [docs/TESTING.md](docs/TESTING.md) |
 | **Accessibility** | WCAG 2.1 / 2.2 AA | Light/Dark/High-Contrast OLED, `Aa+` Large Text, `.sr-only` twins, RTL Urdu, `jsx-a11y` clean | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
 
 ### Running Verification Commands

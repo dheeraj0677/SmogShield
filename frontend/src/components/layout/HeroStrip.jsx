@@ -50,7 +50,17 @@ export function HeroStrip({ city, aqiSnapshot, onSelectCity }) {
       className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${heroGradient} p-5 text-white shadow-lg sm:p-6`}
     >
       <div
-        className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-teal-400/15 blur-3xl"
+        className="pointer-events-none absolute inset-0 opacity-20 mix-blend-luminosity"
+        aria-hidden="true"
+      >
+        <img
+          src="/images/hero-smog-skyline.jpg"
+          alt=""
+          className="h-full w-full object-cover object-center"
+        />
+      </div>
+      <div
+        className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-teal-400/20 blur-3xl animate-float-slow"
         aria-hidden="true"
       />
       <div
@@ -77,6 +87,7 @@ export function HeroStrip({ city, aqiSnapshot, onSelectCity }) {
           <nav aria-label="Quick section jump links" className="flex flex-wrap gap-2 pt-1">
             {[
               { href: '#overview', label: 'Live Telemetry & AI' },
+              { href: '#visual-guides', label: 'Visual Playbooks' },
               { href: '#trend-section', label: '24h Smog Curve' },
               { href: '#action-plans', label: 'Action Plans & Solvers' },
             ].map((link) => (

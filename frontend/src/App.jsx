@@ -3,10 +3,13 @@ import { CalendarClock, Leaf, Route, Sparkles, Users2 } from 'lucide-react';
 import { ChatWindow } from './components/chat/ChatWindow.jsx';
 import { ErrorBoundary } from './components/common/ErrorBoundary.jsx';
 import { LoadingSpinner } from './components/common/LoadingSpinner.jsx';
+import { RevealSection } from './components/common/RevealSection.jsx';
 import { ScrollControls } from './components/common/ScrollControls.jsx';
 import { SkipToContent } from './components/common/SkipToContent.jsx';
 import { AQIDashboard } from './components/dashboard/AQIDashboard.jsx';
+import { AQIScaleBar } from './components/dashboard/AQIScaleBar.jsx';
 import { SmogSparkline } from './components/dashboard/SmogSparkline.jsx';
+import { VisualGuidesSection } from './components/dashboard/VisualGuidesSection.jsx';
 import { Footer } from './components/layout/Footer.jsx';
 import { Header } from './components/layout/Header.jsx';
 import { HeroStrip } from './components/layout/HeroStrip.jsx';
@@ -150,7 +153,7 @@ export default function App() {
               )}
 
               <section id="overview" className="grid grid-cols-1 gap-6 xl:grid-cols-12">
-                <div className="xl:col-span-7">
+                <RevealSection variant="right" startVisible className="xl:col-span-7">
                   {loading && !aqiSnapshot ? (
                     <LoadingSpinner label={`Fetching real-time AQI for ${userProfile.city}...`} />
                   ) : (
@@ -161,9 +164,9 @@ export default function App() {
                       onRefresh={refresh}
                     />
                   )}
-                </div>
+                </RevealSection>
 
-                <div className="xl:col-span-5">
+                <RevealSection variant="left" startVisible delayMs={80} className="xl:col-span-5">
                   <ChatWindow
                     city={aqiSnapshot?.resolved_city || userProfile.city}
                     messages={messages}
@@ -172,24 +175,35 @@ export default function App() {
                     onSendMessage={sendMessage}
                     onClearChat={clearChat}
                   />
-                </div>
+                </RevealSection>
               </section>
 
               {aqiSnapshot && (
-                <section id="trend-section" aria-label="Diurnal smog trend and daily impact" className="space-y-4">
+                <RevealSection
+                  as="section"
+                  id="trend-section"
+                  variant="up"
+                  ariaLabel="Diurnal smog trend and daily impact"
+                  className="space-y-4"
+                >
+                  <AQIScaleBar aqi={aqiSnapshot.aqi} />
                   <SmogSparkline
                     trend={aqiSnapshot.hourly_trend}
                     city={aqiSnapshot.resolved_city}
                   />
                   <ImpactMeter recommendations={recommendations} />
-                </section>
+                </RevealSection>
               )}
 
+              <VisualGuidesSection onSelectPlanTab={setActiveTab} />
+
               {recommendations && (
-                <section
+                <RevealSection
+                  as="section"
                   id="action-plans"
-                  aria-label="Personalized action plans"
-                  className="space-y-4 rounded-3xl border border-slate-200 bg-white/70 p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-900/60"
+                  variant="zoom"
+                  ariaLabel="Personalized action plans"
+                  className="space-y-4 rounded-3xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur-sm sm:p-5 dark:border-slate-800 dark:bg-slate-900/70"
                 >
                   <div
                     role="tablist"
@@ -249,7 +263,7 @@ export default function App() {
                       <CommunityHub effectiveAqi={recommendations.effective_aqi} />
                     )}
                   </div>
-                </section>
+                </RevealSection>
               )}
             </div>
           </div>
