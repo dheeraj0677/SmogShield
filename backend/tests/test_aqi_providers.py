@@ -119,3 +119,7 @@ async def test_reverse_geocode_and_ip_lookup():
 
     client.get.return_value = _mock_response(500, {})
     assert await lookup_ip_location("127.0.0.1", client) is None
+
+    client.get.side_effect = httpx.ConnectError("offline")
+    assert await reverse_geocode(18.52, 73.85, client) is None
+    assert await lookup_ip_location("8.8.8.8", client) is None

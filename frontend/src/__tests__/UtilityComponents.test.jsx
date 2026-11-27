@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { ShieldCheck } from 'lucide-react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { MessageBubble } from '../components/chat/MessageBubble.jsx';
 import { AccessibleIcon } from '../components/common/AccessibleIcon.jsx';
 import { ScrollControls } from '../components/common/ScrollControls.jsx';
 import {
@@ -10,6 +11,7 @@ import {
   fetchAQIByIP,
   fetchCommutePlan,
 } from '../services/api.js';
+import { getAQIMetadata } from '../utils/aqiHelpers.js';
 
 describe('Utility Components & API Client', () => {
   afterEach(() => {
@@ -57,5 +59,30 @@ describe('Utility Components & API Client', () => {
       })
     );
     await expect(fetchAQI('Unknown')).rejects.toThrow('City not found');
+  });
+
+  it('renders MessageBubble follow-ups and covers all AQI metadata thresholds', () => {
+    const onFollowUp = vi.fn();
+    render(
+      <MessageBubble
+        message={{
+          id: 'm1',
+          role: 'assistant',
+          content: '**Stay indoors** and run HEPA.',
+          impactSummary: 'Reduces dose by 50%',
+          followUpPrompts: ['What filter CADR do I need?'],
+          recommendations: [{ id: 'r1', title: 'Seal windows', impact_metric: '-30% PM2.5' }],
+          aiProvider: 'openrouter',
+          disclaimer: 'Educational guidance only.',
+        }}
+        onFollowUpClick={onFollowUp}
+      />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'What filter CADR do I need?' }));
+    expect(onFollowUp).toHaveBeenCalledWith('What filter CADR do I need?');
+
+    for (const aqi of [25, 75, 125, 175, 250, 350]) {
+      expect(getAQIMetadata(aqi).label).toBeTruthy();
+    }
   });
 });

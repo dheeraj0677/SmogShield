@@ -73,3 +73,19 @@ def test_health_reports_configured_services():
     assert services["google_air_quality"] == "configured"
     assert "openweathermap" in services["weather"]
     assert "waqi" in services["aqi"]
+
+
+def test_recommendations_get_route_error_paths(client):
+    app = client.app
+    original = app.state.aqi_service.get_current_aqi
+
+    app.state.aqi_service.get_current_aqi = AsyncMock(side_effect=ValueError("invalid"))
+    assert client.get("/api/recommendations/BadCity").status_code == 400
+
+    app.state.aqi_service.get_current_aqi = AsyncMock(side_effect=CityNotFoundError("missing"))
+    assert client.get("/api/recommendations/Atlantis").status_code == 404
+
+    app.state.aqi_service.get_current_aqi = AsyncMock(side_effect=ExternalServiceError("down"))
+    assert client.get("/api/recommendations/Delhi").status_code == 503
+
+    app.state.aqi_service.get_current_aqi = original

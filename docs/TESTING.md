@@ -1,14 +1,14 @@
 # Automated Testing & Verification Report — SmogShield
 
-**Total Verified Passing Tests:** **86 / 86 (100% Passing)**  
-**Backend Statement Coverage:** **92%** (`1,773` statements) | **Frontend `src/` Coverage:** **90.76%** (`v8`)
+**Total Verified Passing Tests:** **108 / 108 (100% Passing)**  
+**Backend Statement Coverage:** **97%** (`2,039` statements) | **Frontend `src/` Coverage:** **97.08%** (`v8`)
 
 ---
 
 ## 1. Backend Verification (`Pytest` + `Ruff`)
 
 - **Linter**: `ruff check .` — **0 errors**
-- **Test Runner**: `pytest --cov=. --cov-report=term-missing` — **65 / 65 passed** (`1.52s`)
+- **Test Runner**: `pytest --cov=. --cov-report=term-missing` — **79 / 79 passed** (`4.07s`)
 
 | Test File                              | Focus                                                                                                                                                                     | Tests | Coverage Highlights                                                                                 |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | --------------------------------------------------------------------------------------------------- |
@@ -24,8 +24,8 @@
 ## 2. Frontend Verification (`ESLint` + `Vitest` + `Playwright` + `Axe`)
 
 - **Linter**: `npm run lint` (`eslint` + `eslint-plugin-jsx-a11y`) — **0 errors**
-- **Unit & DOM Tests**: `npm run test:coverage` (`vitest` + `v8`) — **19 / 19 passed** (`90.76%` `src/` coverage)
-- **Production Build**: `npm run build` (`vite build`) — `70.45 kB` gzipped JS, `7.76 kB` gzipped CSS
+- **Unit & DOM Tests**: `npm run test:coverage` (`vitest` + `v8`) — **27 / 27 passed** (`97.08%` `src/` coverage)
+- **Production Build**: `npm run build` (`vite build`) — `70.61 kB` gzipped JS, `7.76 kB` gzipped CSS
 - **Browser E2E + WCAG Scan**: `npx playwright test` (real headless Chrome + `@axe-core/playwright`) — **2 / 2 passed** (`21.4s`, **`0` WCAG 2.1 A/AA violations**):
   - Full desktop flow: live AQI meter, 24h diurnal sparkline, CADR solver, Dijkstra clean corridor, Urdu RTL community alerts, AI chat submission.
   - Mobile responsive viewport (`390×844`) layout and drawer toggle.
