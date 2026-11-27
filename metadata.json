@@ -8,8 +8,8 @@
   "verifiedMetrics": {
     "backendLintErrors": 0,
     "frontendLintErrors": 0,
-    "backendTestsTotal": 63,
-    "backendTestsPassed": 63,
+    "backendTestsTotal": 65,
+    "backendTestsPassed": 65,
     "backendCoveragePercent": 92,
     "frontendUnitTestsTotal": 19,
     "frontendUnitTestsPassed": 19,
@@ -17,7 +17,7 @@
     "e2eTestsTotal": 2,
     "e2eTestsPassed": 2,
     "axeWcagViolations": 0,
-    "totalTestsPassed": 84,
+    "totalTestsPassed": 86,
     "frontendJsGzipKB": 70.45,
     "frontendCssGzipKB": 7.76
   },

@@ -151,7 +151,15 @@ npm run dev
 
 Open `http://localhost:5173`.
 
-### Option B: Docker Compose
+### Option B: Deploy on Render (1-Click Blueprint)
+
+SmogShield includes a unified multi-stage [`Dockerfile`](Dockerfile) and [`render.yaml`](render.yaml) Blueprint serving both the FastAPI backend (`/api/*`) and built React UI (`/`) from a single origin on Render's Free Tier:
+
+1. In the **Render Dashboard**, click **New + -> Blueprint** and connect `https://github.com/dheeraj0677/SmogShield`.
+2. When prompted, enter your `OPENROUTER_API_KEY` (and optionally `GEMINI_API_KEY` / `GOOGLE_AIR_QUALITY_API_KEY`).
+3. Render automatically builds `frontend/dist` + FastAPI, sets `$PORT` and `RENDER_EXTERNAL_URL`, and monitors `/api/health`.
+
+### Option C: Docker Compose
 
 ```bash
 docker compose up --build
@@ -192,7 +200,7 @@ Detailed reports for every evaluation focus area live in [`docs/`](docs/):
 | **Code Quality**      | **0 lint errors**           | `ruff check .` (`0` errors), `eslint .` (`0` errors), `<=200`-line modular files                   | [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md)           |
 | **Security**          | OWASP Top 10 & CWE hardened | `16 KB` cap (`413`), `415` JSON guard, rate limiter (`429`), CSP/COOP, SHA-256 cache, `0` prod npm vulns | [docs/SECURITY.md](docs/SECURITY.md)                   |
 | **Efficiency**        | Lean footprint & caching    | `70.45 kB` JS / `7.76 kB` CSS gzipped, GZip middleware, single-call hourly+current telemetry       | [docs/EFFICIENCY.md](docs/EFFICIENCY.md)               |
-| **Testing**           | **84 / 84 tests passing**   | `63` Pytest (`92%` cov) + `19` Vitest (`90.76%` cov) + `2` Playwright + Axe Chrome E2E             | [docs/TESTING.md](docs/TESTING.md)                     |
+| **Testing**           | **86 / 86 tests passing**   | `65` Pytest (`92%` cov) + `19` Vitest (`90.76%` cov) + `2` Playwright + Axe Chrome E2E             | [docs/TESTING.md](docs/TESTING.md)                     |
 | **Accessibility**     | **0 axe violations**        | Verified WCAG 2.1 AA via `@axe-core/playwright`, Light/Dark mode, `Aa+`, `.sr-only` twins, RTL Urdu | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md)         |
 | **Google Services**   | Multi-service               | Google Gemini (`google-genai`), Google Air Quality API v1, Google Fonts, Gemma 4 (`:free`), Chrome | [docs/GOOGLE_SERVICES.md](docs/GOOGLE_SERVICES.md)     |
 

@@ -11,9 +11,14 @@ BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env")
 
 
-def _parse_csv(raw_value: str) -> list[str]:
-    """Parse a comma-separated environment string into a clean list."""
-    return [item.strip() for item in raw_value.split(",") if item.strip()]
+def _parse_cors_origins() -> list[str]:
+    """Parse CORS origins and append RENDER_EXTERNAL_URL when deployed on Render."""
+    raw_value = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+    origins = [item.strip().rstrip("/") for item in raw_value.split(",") if item.strip()]
+    render_url = os.getenv("RENDER_EXTERNAL_URL", "").strip().rstrip("/")
+    if render_url and render_url not in origins:
+        origins.append(render_url)
+    return origins
 
 
 class Settings(BaseModel):
@@ -42,11 +47,7 @@ class Settings(BaseModel):
         default_factory=lambda: os.getenv("OPENWEATHER_API_KEY", "").strip()
     )
 
-    cors_origins: list[str] = Field(
-        default_factory=lambda: _parse_csv(
-            os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
-        )
-    )
+    cors_origins: list[str] = Field(default_factory=_parse_cors_origins)
     cache_ttl_seconds: int = Field(
         default_factory=lambda: int(os.getenv("CACHE_TTL_SECONDS", "900"))
     )

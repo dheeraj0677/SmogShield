@@ -87,3 +87,37 @@ def test_chat_uses_sha256_cache_on_repeat_query(app, client):
     assert second.status_code == 200
     assert app.state.ai_cache.stats()["hits"] >= 1
 
+
+def test_spa_serving_handles_assets_fallback_and_blocks_traversal(tmp_path):
+    dist_dir = tmp_path / "dist"
+    (dist_dir / "assets").mkdir(parents=True)
+    (dist_dir / "index.html").write_text("<html><body>SmogShield SPA</body></html>")
+    (dist_dir / "assets" / "app.js").write_text("console.log('ok');")
+    (tmp_path / "secret.txt").write_text("TOP_SECRET")
+
+    spa_app = create_app(settings=Settings(app_env="test"), static_dir=dist_dir)
+    spa_client = TestClient(spa_app)
+
+    home = spa_client.get("/")
+    assert home.status_code == 200
+    assert "SmogShield SPA" in home.text
+    assert "fonts.googleapis.com" in home.headers["Content-Security-Policy"]
+
+    asset = spa_client.get("/assets/app.js")
+    assert asset.status_code == 200
+    assert "console.log" in asset.text
+
+    traversal = spa_client.get("/%2e%2e/secret.txt")
+    assert traversal.status_code == 200
+    assert "TOP_SECRET" not in traversal.text
+
+    missing_api = spa_client.get("/api/nonexistent-endpoint")
+    assert missing_api.status_code == 404
+    assert "default-src 'self'" in missing_api.headers["Content-Security-Policy"]
+
+
+def test_render_external_url_included_in_cors(monkeypatch):
+    monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://smogshield.onrender.com/")
+    settings = Settings(app_env="production")
+    assert "https://smogshield.onrender.com" in settings.cors_origins
+

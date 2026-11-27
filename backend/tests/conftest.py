@@ -59,6 +59,7 @@ def _isolate_env_keys(monkeypatch: pytest.MonkeyPatch):
         "GOOGLE_AIR_QUALITY_API_KEY",
         "WAQI_API_TOKEN",
         "OPENWEATHER_API_KEY",
+        "RENDER_EXTERNAL_URL",
     ):
         monkeypatch.delenv(var, raising=False)
 

@@ -1,6 +1,7 @@
 """FastAPI application entry point and factory for SmogShield."""
 
 import logging
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.gzip import GZipMiddleware
@@ -10,6 +11,7 @@ from api.middleware.cors import configure_cors
 from api.middleware.rate_limiter import RateLimitMiddleware, SlidingWindowRateLimiter
 from api.middleware.security import MaxBodySizeMiddleware, SecurityHeadersMiddleware
 from api.routes import aqi, chat, health, recommendations, tools
+from api.spa import mount_spa
 from config import Settings, get_settings
 from services.aqi_service import AQIService
 from services.cache_service import TTLCache
@@ -24,7 +26,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    static_dir: Path | None = None,
+) -> FastAPI:
     """Create and configure a FastAPI instance with middleware, services, and routes."""
     app_settings = settings or get_settings()
 
@@ -94,6 +99,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             content={"detail": "An internal error occurred. Please try again shortly."},
         )
 
+    mount_spa(app, static_dir=static_dir)
     return app
 
 
