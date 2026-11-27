@@ -82,12 +82,43 @@ Every evaluation focus area is backed by dedicated documentation and verified au
 
 | Pillar | Status | Verified Evidence | Doc |
 |---|---|---|---|
-| **Problem Alignment** | Complete | 8-row Requirements Traceability Matrix covering Challenge 6 | [PROBLEM_ALIGNMENT.md](PROBLEM_ALIGNMENT.md) |
-| **Code Quality** | **0 lint errors** | `ruff check .` (0 errors) & `eslint .` (0 errors), modular pure compute | [CODE_QUALITY.md](CODE_QUALITY.md) |
-| **Security** | Hardened | `16 KB` cap (`413`), `415` JSON check, rate limit (`429`), CSP/COOP, SHA-256 cache, prompt guard | [SECURITY.md](SECURITY.md) |
-| **Efficiency** | Optimized | `66.15 kB` gzip JS, `6.17 kB` gzip CSS, GZip API, 15m LRU+TTL + SHA-256 AI cache | [EFFICIENCY.md](EFFICIENCY.md) |
-| **Testing** | **78 / 78 passed** | `60` Pytest (`91%` coverage) + `16` Vitest + `2` Playwright Chrome E2E | [TESTING.md](TESTING.md) |
-| **Accessibility** | WCAG AA | Light/Dark/High-Contrast OLED (>14:1), `Aa+` Large Text, `.sr-only` SVG twins, RTL Urdu | [ACCESSIBILITY.md](ACCESSIBILITY.md) |
+| **Problem Alignment** | Complete | 8-row Requirements Traceability Matrix covering Challenge 6 | [docs/PROBLEM_ALIGNMENT.md](docs/PROBLEM_ALIGNMENT.md) |
+| **Code Quality** | **0 lint errors** | `ruff check .` (0 errors) & `eslint .` (0 errors), modular pure compute | [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md) |
+| **Security** | Hardened | `16 KB` cap (`413`), `415` JSON check, rate limit (`429`), CSP/COOP, SHA-256 cache, prompt guard | [docs/SECURITY.md](docs/SECURITY.md) |
+| **Efficiency** | Optimized | `66.15 kB` gzip JS, `6.17 kB` gzip CSS, GZip API, 15m LRU+TTL + SHA-256 AI cache | [docs/EFFICIENCY.md](docs/EFFICIENCY.md) |
+| **Testing** | **78 / 78 passed** | `60` Pytest (`91%` coverage) + `16` Vitest + `2` Playwright Chrome E2E | [docs/TESTING.md](docs/TESTING.md) |
+| **Accessibility** | WCAG AA | Light/Dark/High-Contrast OLED (>14:1), `Aa+` Large Text, `.sr-only` SVG twins, RTL Urdu | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
+
+---
+
+## 📂 Project Structure
+
+```text
+SmogShield/
+├── .github/workflows/ci.yml        # Automated CI (Ruff, Pytest, ESLint, Vitest, Build)
+├── docs/                           # Architecture, API, & Evaluation Pillar Reports
+│   ├── ACCESSIBILITY.md
+│   ├── API.md
+│   ├── ARCHITECTURE.md
+│   ├── CODE_QUALITY.md
+│   ├── EFFICIENCY.md
+│   ├── PROBLEM_ALIGNMENT.md
+│   ├── SECURITY.md
+│   └── TESTING.md
+├── backend/                        # FastAPI API, Pure Compute Solvers, & Pytest Suite
+│   ├── api/ (middleware, routes)
+│   ├── models/ (enums, schemas)
+│   ├── services/ (aqi, weather, recommendation, gemini, cache)
+│   ├── utils/ (aqi_calculator, cadr_calculator, commute_dose, dijkstra_router, validators)
+│   └── tests/
+├── frontend/                       # React 18 + Vite + Tailwind CSS UI & Tests
+│   ├── e2e/smoke.spec.js
+│   └── src/ (components, hooks, services, utils, __tests__)
+├── docker-compose.yml
+├── metadata.json
+├── LICENSE
+└── README.md
+```
 
 ---
 
