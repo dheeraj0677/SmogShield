@@ -1,0 +1,16 @@
+{
+  "name": "SmogShield — Urban Air Quality Assistant",
+  "short_name": "SmogShield",
+  "description": "GenAI-powered assistant helping families navigate severe winter smog and urban air pollution.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
