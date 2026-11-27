@@ -85,3 +85,11 @@ def test_chat_neutralizes_prompt_injection_and_responds_safely(app, client):
     data = res.json()
     assert "STRICT SAFETY" not in data["reply"]
     assert "165" in data["reply"]
+
+
+def test_prompt_leak_detector_catches_internal_delimiters():
+    from services.gemini_service import GeminiService
+
+    assert GeminiService._contains_prompt_leak("Here is <environment_context>") is True
+    assert GeminiService._contains_prompt_leak("Use an N95 mask outdoors.") is False
+

@@ -3,12 +3,13 @@
 import logging
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 
 from api.middleware.cors import configure_cors
 from api.middleware.rate_limiter import RateLimitMiddleware, SlidingWindowRateLimiter
-from api.middleware.security import SecurityHeadersMiddleware
-from api.routes import aqi, chat, health, recommendations
+from api.middleware.security import MaxBodySizeMiddleware, SecurityHeadersMiddleware
+from api.routes import aqi, chat, health, recommendations, tools
 from config import Settings, get_settings
 from services.aqi_service import AQIService
 from services.cache_service import TTLCache
@@ -43,18 +44,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         ttl_seconds=app_settings.cache_ttl_seconds,
         max_entries=app_settings.cache_max_entries,
     )
+    ai_cache = TTLCache(ttl_seconds=600, max_entries=100)
     weather_service = WeatherService(settings=app_settings, cache=cache)
     aqi_service = AQIService(
         settings=app_settings, cache=cache, weather_service=weather_service
     )
     recommendation_engine = RecommendationEngine()
     gemini_service = GeminiService(
-        settings=app_settings, recommendation_engine=recommendation_engine
+        settings=app_settings,
+        recommendation_engine=recommendation_engine,
+        cache=ai_cache,
     )
     rate_limiter = SlidingWindowRateLimiter(window_seconds=60)
 
     app.state.settings = app_settings
     app.state.cache = cache
+    app.state.ai_cache = ai_cache
     app.state.weather_service = weather_service
     app.state.aqi_service = aqi_service
     app.state.recommendation_engine = recommendation_engine
@@ -62,7 +67,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.rate_limiter = rate_limiter
 
     configure_cors(app, app_settings)
+    app.add_middleware(GZipMiddleware, minimum_size=500)
     app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(MaxBodySizeMiddleware, max_bytes=16 * 1024)
     app.add_middleware(
         RateLimitMiddleware,
         chat_limit_per_min=app_settings.rate_limit_chat_per_min,
@@ -74,6 +81,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(aqi.router, prefix="/api")
     app.include_router(recommendations.router, prefix="/api")
     app.include_router(chat.router, prefix="/api")
+    app.include_router(tools.router, prefix="/api")
 
     @app.exception_handler(Exception)
     async def unhandled_exception_handler(

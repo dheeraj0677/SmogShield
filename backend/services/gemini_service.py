@@ -15,6 +15,7 @@ from models.schemas import (
     RecommendationsResponse,
     UserProfile,
 )
+from services.cache_service import TTLCache
 from services.recommendation_engine import RecommendationEngine
 from utils.validators import detect_prompt_injection, neutralize_prompt_injection
 
@@ -46,9 +47,11 @@ class GeminiService:
         self,
         settings: Settings | None = None,
         recommendation_engine: RecommendationEngine | None = None,
+        cache: TTLCache | None = None,
     ) -> None:
         self._settings = settings or get_settings()
         self._engine = recommendation_engine or RecommendationEngine()
+        self._ai_cache = cache or TTLCache(ttl_seconds=600, max_entries=100)
 
     async def generate_chat_response(
         self,
@@ -67,6 +70,25 @@ class GeminiService:
         if injection_detected:
             logger.warning("Prompt injection pattern neutralized in user message.")
 
+        cache_key = TTLCache.hash_key(
+            "chat",
+            {
+                "city": aqi_snapshot.resolved_city.lower(),
+                "aqi_bucket": aqi_snapshot.aqi // 15,
+                "effective_aqi": rec_package.effective_aqi,
+                "query": safe_message.lower(),
+                "commute": profile.commute_type.value,
+                "kids": profile.has_children,
+                "elderly": profile.has_elderly,
+                "conditions": sorted(profile.health_conditions),
+                "budget": profile.budget.value,
+            },
+        )
+        if not history:
+            cached_reply = self._ai_cache.get(cache_key)
+            if cached_reply is not None:
+                return cached_reply.model_copy(update={"aqi_snapshot": aqi_snapshot})
+
         ai_provider = "smogshield-rule-engine"
         reply_text: str
 
@@ -79,7 +101,7 @@ class GeminiService:
                 top_recs=top_recs,
                 history=history or [],
             )
-            if gemini_reply:
+            if gemini_reply and not self._contains_prompt_leak(gemini_reply):
                 reply_text = gemini_reply
                 ai_provider = f"gemini ({self._settings.gemini_model})"
             else:
@@ -99,7 +121,7 @@ class GeminiService:
 
         follow_ups = self._build_follow_up_prompts(aqi_snapshot, profile)
 
-        return ChatResponse(
+        response = ChatResponse(
             reply=reply_text,
             recommendations=top_recs,
             aqi_snapshot=aqi_snapshot,
@@ -107,6 +129,15 @@ class GeminiService:
             ai_provider=ai_provider,
             follow_up_prompts=follow_ups,
         )
+        if not history:
+            self._ai_cache.set(cache_key, response, ttl_seconds=600)
+        return response
+
+    @staticmethod
+    def _contains_prompt_leak(text: str) -> bool:
+        """Prevent accidental leakage of internal prompt boundary delimiters."""
+        markers = ("<environment_context>", "<household_profile>", "STRICT SAFETY & GROUNDING")
+        return any(marker in text for marker in markers)
 
     async def _call_gemini(
         self,

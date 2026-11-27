@@ -55,3 +55,35 @@ def test_cors_blocks_unlisted_origin(client):
         },
     )
     assert "access-control-allow-origin" not in {k.lower() for k in res.headers}
+
+
+def test_oversized_body_returns_413_and_wrong_content_type_returns_415(client):
+    huge_payload = '{"message": "' + ("a" * 17000) + '", "city": "Delhi"}'
+    res_413 = client.post(
+        "/api/chat",
+        content=huge_payload,
+        headers={"Content-Type": "application/json"},
+    )
+    assert res_413.status_code == 413
+
+    res_415 = client.post(
+        "/api/chat",
+        content="message=hello",
+        headers={"Content-Type": "text/plain"},
+    )
+    assert res_415.status_code == 415
+
+
+def test_chat_uses_sha256_cache_on_repeat_query(app, client):
+    async def mock_aqi(city: str):
+        return make_snapshot(city=city, aqi=210)
+
+    app.state.aqi_service.get_current_aqi = mock_aqi
+    payload = {"message": "How to build a DIY filter?", "city": "Delhi"}
+
+    first = client.post("/api/chat", json=payload)
+    second = client.post("/api/chat", json=payload)
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert app.state.ai_cache.stats()["hits"] >= 1
+

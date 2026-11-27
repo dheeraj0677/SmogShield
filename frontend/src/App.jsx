@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CalendarClock, Leaf, Sparkles } from 'lucide-react';
+import { CalendarClock, Leaf, Route, Sparkles, Users2 } from 'lucide-react';
 import { ChatWindow } from './components/chat/ChatWindow.jsx';
 import { ErrorBoundary } from './components/common/ErrorBoundary.jsx';
 import { LoadingSpinner } from './components/common/LoadingSpinner.jsx';
@@ -9,9 +9,11 @@ import { Footer } from './components/layout/Footer.jsx';
 import { Header } from './components/layout/Header.jsx';
 import { Sidebar } from './components/layout/Sidebar.jsx';
 import { AlternativesList } from './components/recommendations/AlternativesList.jsx';
+import { CommunityHub } from './components/recommendations/CommunityHub.jsx';
 import { DailyRoutine } from './components/recommendations/DailyRoutine.jsx';
 import { ImpactMeter } from './components/recommendations/ImpactMeter.jsx';
 import { IndoorHacks } from './components/recommendations/IndoorHacks.jsx';
+import { TransitPlanner } from './components/recommendations/TransitPlanner.jsx';
 import { useAQI } from './hooks/useAQI.js';
 import { useChat } from './hooks/useChat.js';
 import { useGeolocation } from './hooks/useGeolocation.js';
@@ -22,15 +24,20 @@ import { DEFAULT_USER_PROFILE } from './utils/constants.js';
 const PLAN_TABS = [
   { id: 'routine', label: 'Daily Routine', icon: CalendarClock },
   { id: 'indoor', label: 'Indoor Air Hacks', icon: Sparkles },
-  { id: 'alternatives', label: 'Sustainable Alternatives', icon: Leaf },
+  { id: 'transit', label: 'Clean Commute', icon: Route },
+  { id: 'alternatives', label: 'Alternatives', icon: Leaf },
+  { id: 'community', label: 'Community & Alerts', icon: Users2 },
 ];
+
+const THEME_CYCLE = ['light', 'dark', 'high-contrast'];
 
 export default function App() {
   const [userProfile, setUserProfile] = useLocalStorage(
     'smogshield_profile_v1',
     DEFAULT_USER_PROFILE
   );
-  const [darkMode, setDarkMode] = useLocalStorage('smogshield_dark_mode', false);
+  const [themeMode, setThemeMode] = useLocalStorage('smogshield_theme_mode', 'light');
+  const [largeText, setLargeText] = useLocalStorage('smogshield_large_text', false);
   const [activeTab, setActiveTab] = useState('routine');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -50,8 +57,21 @@ export default function App() {
   );
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', Boolean(darkMode));
-  }, [darkMode]);
+    const root = document.documentElement;
+    root.classList.toggle('dark', themeMode === 'dark' || themeMode === 'high-contrast');
+    root.classList.toggle('high-contrast', themeMode === 'high-contrast');
+  }, [themeMode]);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('large-text', Boolean(largeText));
+  }, [largeText]);
+
+  const handleCycleTheme = () => {
+    setThemeMode((prev) => {
+      const idx = THEME_CYCLE.indexOf(prev);
+      return THEME_CYCLE[(idx + 1) % THEME_CYCLE.length];
+    });
+  };
 
   const handleCityChange = (nextCity) => {
     setUserProfile((prev) => ({ ...prev, city: nextCity }));
@@ -81,8 +101,10 @@ export default function App() {
           onUseGeolocation={handleUseGeolocation}
           locating={locating}
           aqiSnapshot={aqiSnapshot}
-          darkMode={darkMode}
-          onToggleDarkMode={() => setDarkMode((prev) => !prev)}
+          themeMode={themeMode}
+          onCycleTheme={handleCycleTheme}
+          largeText={largeText}
+          onToggleLargeText={() => setLargeText((prev) => !prev)}
           onToggleSidebar={() => setSidebarOpen(true)}
         />
 
@@ -179,10 +201,17 @@ export default function App() {
                         <IndoorHacks
                           hacks={recommendations.indoor_hacks}
                           healthProtections={recommendations.health_protections}
+                          outdoorPm25={aqiSnapshot?.pollutants?.pm25 || 150}
                         />
+                      )}
+                      {activeTab === 'transit' && (
+                        <TransitPlanner city={aqiSnapshot?.resolved_city || userProfile.city} />
                       )}
                       {activeTab === 'alternatives' && (
                         <AlternativesList alternatives={recommendations.alternatives} />
+                      )}
+                      {activeTab === 'community' && (
+                        <CommunityHub effectiveAqi={recommendations.effective_aqi} />
                       )}
                     </div>
                   </section>

@@ -49,3 +49,17 @@ export async function sendChatMessage({ message, city, userProfile, history = []
     }),
   });
 }
+
+export async function calculateRoomCADR(payload) {
+  return requestJson('/api/tools/cadr', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function fetchCommutePlan({ city, distance_km, wear_n95_mask }) {
+  return requestJson('/api/tools/commute-plan', {
+    method: 'POST',
+    body: JSON.stringify({ city, distance_km, wear_n95_mask }),
+  });
+}

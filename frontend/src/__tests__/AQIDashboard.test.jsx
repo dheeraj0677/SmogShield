@@ -56,4 +56,37 @@ describe('AQIDashboard', () => {
     expect(screen.getByText(/PM2.5/i)).toBeInTheDocument();
     expect(screen.getByText(/high trapping risk/i)).toBeInTheDocument();
   });
+
+  it('triggers refresh callback and renders low-risk state without warnings', async () => {
+    const { default: userEvent } = await import('@testing-library/user-event');
+    const user = userEvent.setup();
+    const onRefresh = vi.fn();
+
+    render(
+      <AQIDashboard
+        snapshot={{
+          ...SAMPLE_SNAPSHOT,
+          resolved_city: 'London',
+          country: 'United Kingdom',
+          aqi: 28,
+          category: 'good',
+          category_label: 'Good',
+          cached: true,
+          weather: {
+            ...SAMPLE_SNAPSHOT.weather,
+            smog_trapping_risk: 'low',
+            dispersion_note: 'Breezy dispersion.',
+          },
+        }}
+        recommendations={{ effective_aqi: 28, alert_message: 'Clean air today.' }}
+        loading={false}
+        onRefresh={onRefresh}
+      />
+    );
+
+    expect(screen.getByText(/low trapping risk/i)).toBeInTheDocument();
+    expect(screen.getByText(/\(cached\)/i)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /Refresh Live AQI/i }));
+    expect(onRefresh).toHaveBeenCalledTimes(1);
+  });
 });

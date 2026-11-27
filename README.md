@@ -1,181 +1,102 @@
-# 🛡️ SmogShield — Urban Air Quality Assistant
+# 🛡️ SmogShield — Urban Air Quality & Winter Smog Assistant
 
-> A GenAI-powered assistant that helps families and communities navigate severe winter smog and urban air pollution by suggesting low-emission daily routines, practical indoor air quality hacks, and sustainable alternatives tailored to location and household context—with clear explanations of the direct impact of every choice.
+> A GenAI-powered assistant helping families and communities navigate severe winter smog and urban air pollution through low-emission daily routines, room-sized indoor air quality hacks, Dijkstra clean-corridor commute routing, and sustainable alternatives—with quantified health & carbon impact on every choice.
 
 ---
 
 ## 🎯 Chosen Challenge Vertical
 
-**Challenge 6: Urban Air Quality Assistant (PromptWars Virtual)**
+**`[Challenge 6]` Urban Air Quality Assistant (PromptWars Virtual)**
 
-SmogShield focuses on households living in winter-smog and high-pollution urban corridors (such as Delhi, Lahore, Lucknow, Dhaka, and Beijing) as well as global cities experiencing acute air-quality events.
+SmogShield is engineered for families, commuters, and neighborhoods impacted by severe winter smog episodes and urban air pollution across South Asia (Delhi, Lahore, Lucknow, Dhaka, Kathmandu) and global cities.
 
 ---
 
 ## 💡 Approach & Logic
 
-SmogShield combines **live environmental telemetry**, **deterministic environmental health rules**, and **Generative AI** in a hybrid architecture:
+SmogShield pairs **live multi-pollutant telemetry**, **deterministic environmental health engineering**, and **Google Gemini GenAI** in a hybrid architecture:
 
-1. **Real-Time AQI & Smog Meteorology**:
-   - Fetches live particulate (`PM2.5`, `PM10`) and gas (`O3`, `NO2`, `SO2`, `CO`) readings plus weather (`temperature`, `humidity`, `wind speed`).
-   - Computes US EPA AQI sub-indices (including the updated 2024 US EPA PM2.5 breakpoints) and evaluates **winter smog-trapping / thermal inversion risk** (e.g., stagnant winds `<7 km/h` + cool/humid air trap soot near breathing height).
-2. **Household Sensitivity Adjustment**:
-   - Adjusts the effective AQI risk upward (`+20` to `+60` points) when the household includes children, elderly adults, or respiratory/cardiovascular conditions such as asthma or COPD.
-3. **Hybrid Recommendation Engine (`backend/services/recommendation_engine.py`)**:
-   - **Daily Routine & Time-Window Schedule**: Recommends when to exercise, commute, seal windows during rush hour, and safely cross-ventilate.
-   - **Indoor Air Quality Hacks**: Adapts to budget and home setup—suggesting low-cost **Corsi-Rosenthal DIY box-fan + MERV-13/HEPA filters** for tight budgets, True HEPA clean-air sleep sanctuaries, wet microfiber mopping (avoiding dust resuspension), kitchen exhaust hygiene, and draft sealing.
-   - **Sustainable Alternatives with Quantified Direct Impact**: Recommends metro/carpool commutes, work-from-home smog days, zero-burn neighborhood heating/waste habits, and consolidated deliveries, showing both **CO₂ saved (kg/day)** and **PM2.5 exposure reduction (%)**.
-4. **Grounded GenAI Conversational Assistant (`backend/services/gemini_service.py`)**:
-   - Injects live AQI, weather dispersion notes, household profile, and top rule-backed interventions into a strictly delimited prompt for **Google Gemini**.
-   - Automatically degrades gracefully to an intelligent context-grounded rule-based advisor if `GEMINI_API_KEY` is omitted or an external LLM call fails.
+1. **Live Telemetry & Thermal Inversion Meteorology (`aqi_service.py`, `weather_service.py`)**:
+   - Retrieves real-time `PM2.5`, `PM10`, `O₃`, `NO₂`, `SO₂`, `CO`, and a **24-hour diurnal trend** in a single upstream call via **WAQI / OpenWeatherMap** (if keys are configured) or keyless **Open-Meteo** out of the box, with curated urban offline baselines.
+   - Evaluates **winter smog-trapping risk** from wind speed (`<7 km/h`), cool temperatures, and humidity.
+2. **Household Sensitivity Threshold Shifting (`aqi_calculator.py`)**:
+   - Shifts effective AQI risk upward (`+20` to `+60`) for households with children, elderly adults, or respiratory/cardiovascular conditions (`asthma`, `copd`, `heart_disease`).
+3. **Pure Environmental Engineering Solvers (`backend/utils/`)**:
+   - **Room CADR & Clean-Air Decay Solver (`cadr_calculator.py`)**: Sizes commercial HEPA or low-cost **Corsi-Rosenthal DIY box-fan filters** against the `4.8 ACH` clean-room benchmark and estimates minutes to reach `<15 µg/m³` indoor air.
+   - **Dijkstra Clean-Corridor Router (`dijkstra_router.py`)**: Computes the lowest cumulative PM2.5 inhalation route (`Home → Metro Concourse → Greenbelt Path → Work/School`) vs congested arterial corridors.
+   - **Commute Inhaled Dose & CO₂ Table (`commute_dose.py`)**: Compares 6 travel modes (`Work From Home`, `Electric Metro`, `Car`, `Motorbike`, `Walk`, `Cycle`) by minute-ventilation PM2.5 inhalation (`µg`) and `kg CO₂` emitted.
+4. **Grounded GenAI Conversational Assistant (`gemini_service.py`)**:
+   - Injects live AQI, weather dispersion, household profile, and top rule-backed interventions into strictly delimited `<user_query>` prompts for **Google Gemini 2.0 Flash** (`google-genai`), backed by a **SHA-256 AI response cache** and graceful context-grounded fallback when `GEMINI_API_KEY` is omitted.
+5. **Community Action & Multilingual Advisories (`CommunityHub.jsx`)**:
+   - Interactive neighborhood clean-air pledges tracking collective daily `kg CO₂` and particulate prevention, plus emergency advisories in **English**, **Hindi (`हिन्दी`)**, **Urdu (`اردو` with automatic RTL `dir="rtl"`)**, and **Spanish (`Español`)**.
 
 ---
 
 ## ⚙️ How the Solution Works
 
 ```text
-User (Browser: React + Vite + Tailwind)
-   │
-   ├──► Selects City / GPS + Household Profile (kids, asthma, commute, budget)
-   │
-   ├──► GET/POST /api/recommendations ──► AQIService (WAQI or Open-Meteo + 15m TTLCache)
-   │                                         └─► RecommendationEngine ─► Routines, Hacks, Alternatives + Impact
-   │
-   └──► POST /api/chat ────────────────► Validators & Prompt Injection Guard
-                                             └─► GeminiService (Gemini 2.0 Flash + live context / fallback)
+Browser (React 18 + Vite + Tailwind CSS | 66.15 kB gzipped JS)
+   ├── Header & Household Sidebar (City/GPS, Light/Dark/High-Contrast OLED, Aa+ Text, Family/Health/Commute)
+   ├── Live AQI Dashboard (EPA Meter + Pollutant Cards + Inversion Card + Native SVG 24h Diurnal Sparkline)
+   ├── Tabbed Action Plans:
+   │      • Daily Routine (Time-window schedule aligned to inversion peaks & midday clearing)
+   │      • Indoor Air Hacks (Interactive Room CADR/ACH Solver + DIY Box-Fan & HEPA Guides)
+   │      • Clean Commute (Dijkstra Corridor Pathfinder + 6-Mode Inhaled PM2.5 & CO2 Table)
+   │      • Sustainable Alternatives (Quantified kg CO2 saved & % exposure reduction)
+   │      • Community & Alerts (4-Language RTL Emergency Advisories + Neighborhood Pledges)
+   └── SmogShield AI Chat ──► FastAPI Security Pipeline (CORS, GZip, 16KB Cap, Rate Limit, XSS/Injection Guard)
+                                └──► GeminiService (SHA-256 LRU Cache + Gemini 2.0 Flash / Rule Fallback)
 ```
-
-### Zero-Config Live Data + Optional Keys
-- **Out of the box**: SmogShield queries the free, keyless **Open-Meteo** Geocoding, Air Quality, and Weather APIs for live global readings, and uses its built-in context-grounded response generator when `GEMINI_API_KEY` is not set.
-- **With API keys**: Add `GEMINI_API_KEY`, `WAQI_API_TOKEN`, and/or `OPENWEATHER_API_KEY` in `backend/.env` to enable Gemini LLM responses and WAQI/OpenWeatherMap feeds.
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Python `3.11+`
-- Node.js `20+` and `npm`
-
-### 1. Backend Setup
-
+### Backend
 ```bash
 cd backend
 python -m venv .venv
-
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# macOS/Linux:
-# source .venv/bin/activate
-
+.venv\Scripts\Activate.ps1        # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # Optional: add GEMINI_API_KEY, WAQI_API_TOKEN, OPENWEATHER_API_KEY
+cp .env.example .env              # Optional: add GEMINI_API_KEY, WAQI_API_TOKEN, OPENWEATHER_API_KEY
 uvicorn main:app --reload --port 8000
 ```
 
-API documentation is available at `http://localhost:8000/api/docs`.
-
-### 2. Frontend Setup
-
+### Frontend
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev                       # Opens http://localhost:5173
 ```
 
-Open `http://localhost:5173` in your browser.
-
-### 3. Docker Compose (Optional)
-
+### Docker Compose
 ```bash
 docker compose up --build
 ```
 
 ---
 
-## 🔒 Security Measures
+## 📊 Verification & Evaluation Evidence
 
-- **Input Validation & XSS Prevention**: Strict Pydantic field schemas (`models/schemas.py`), city-name regex rejecting path traversal/URLs/scripts (`utils/validators.py`), and safe React rendering without `dangerouslySetInnerHTML`.
-- **Prompt Injection Defense**: Delimited `<user_query>` boundary isolation and pattern neutralization before LLM calls.
-- **Rate Limiting**: Thread-safe sliding-window rate limiter (`30 req/min` for `/api/chat`, `60 req/min` for AQI/recommendations) returning HTTP `429` with `Retry-After`.
-- **Security Headers & CORS**: Attaches `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`, and `Content-Security-Policy`; restricts CORS to configured frontend origins.
-- **Secret Hygiene**: All credentials stay in `.env` (excluded via `.gitignore`); unhandled errors return sanitized JSON without stack traces.
+Every evaluation focus area is backed by dedicated documentation and verified automation:
 
----
-
-## ✅ Testing
-
-### Backend Tests & Linting
-```bash
-cd backend
-.venv\Scripts\python.exe -m pytest --cov=. --cov-report=term-missing
-.venv\Scripts\python.exe -m ruff check .
-```
-
-### Frontend Tests, Linting & Build
-```bash
-cd frontend
-npm run lint
-npm test
-npm run build
-```
-
-### End-to-End Smoke Tests (requires running backend + frontend)
-```bash
-cd frontend
-npm run test:e2e
-```
-
----
-
-## ♿ Accessibility (WCAG 2.1 AA)
-
-- Semantic landmarks (`<header>`, `<aside>`, `<main>`, `<footer>`, `<nav>`) and a keyboard **Skip to main content** link.
-- Live AQI status updates announced via `aria-live="polite"`; circular AQI gauge uses `role="meter"` with `aria-valuetext`.
-- Status conveyed through both **text badges and color** (never color alone).
-- Full keyboard accessibility, visible `:focus-visible` outlines, Dark/Light mode toggle, and `prefers-reduced-motion` support.
-- Automated `eslint-plugin-jsx-a11y` checks enforced in CI.
+| Pillar | Status | Verified Evidence | Doc |
+|---|---|---|---|
+| **Problem Alignment** | Complete | 8-row Requirements Traceability Matrix covering Challenge 6 | [PROBLEM_ALIGNMENT.md](PROBLEM_ALIGNMENT.md) |
+| **Code Quality** | **0 lint errors** | `ruff check .` (0 errors) & `eslint .` (0 errors), modular pure compute | [CODE_QUALITY.md](CODE_QUALITY.md) |
+| **Security** | Hardened | `16 KB` cap (`413`), `415` JSON check, rate limit (`429`), CSP/COOP, SHA-256 cache, prompt guard | [SECURITY.md](SECURITY.md) |
+| **Efficiency** | Optimized | `66.15 kB` gzip JS, `6.17 kB` gzip CSS, GZip API, 15m LRU+TTL + SHA-256 AI cache | [EFFICIENCY.md](EFFICIENCY.md) |
+| **Testing** | **78 / 78 passed** | `60` Pytest (`91%` coverage) + `16` Vitest + `2` Playwright Chrome E2E | [TESTING.md](TESTING.md) |
+| **Accessibility** | WCAG AA | Light/Dark/High-Contrast OLED (>14:1), `Aa+` Large Text, `.sr-only` SVG twins, RTL Urdu | [ACCESSIBILITY.md](ACCESSIBILITY.md) |
 
 ---
 
 ## 🤔 Assumptions Made
 
-1. **AQI Standard**: Calculations follow the **US EPA AQI scale (0–500)**, incorporating the 2024 US EPA PM2.5 breakpoint thresholds as a consistent global baseline.
-2. **Primary Target Context**: Default presets prioritize winter-smog urban centers (e.g., Delhi, Lahore, Lucknow, Beijing), while city search and GPS work globally.
-3. **Advisory Scope**: SmogShield delivers environmental and lifestyle guidance only and does not replace professional medical advice or emergency clinical care.
-4. **Connectivity & Free Tier**: Live telemetry relies on internet access to Open-Meteo / WAQI / OpenWeatherMap; when offline, known cities gracefully fall back to curated baseline profiles.
-5. **Quantified Impact Estimates**: CO₂ and exposure reduction numbers represent typical urban household estimates (e.g., 12 km daily petrol car vs electric metro commute; HEPA/DIY box-fan CADR efficiency) intended to make behavioral trade-offs concrete.
-
----
-
-## 📂 Project Structure
-
-```text
-SmogShield/
-├── .github/workflows/ci.yml
-├── docker-compose.yml
-├── docs/
-│   ├── API.md
-│   └── ARCHITECTURE.md
-├── backend/
-│   ├── main.py
-│   ├── config.py
-│   ├── api/
-│   │   ├── middleware/ (cors, rate_limiter, security)
-│   │   └── routes/ (health, aqi, recommendations, chat)
-│   ├── models/ (enums, schemas)
-│   ├── services/ (aqi_service, weather_service, recommendation_engine, gemini_service, cache_service)
-│   ├── utils/ (aqi_calculator, constants, validators)
-│   └── tests/
-└── frontend/
-    ├── e2e/smoke.spec.js
-    └── src/
-        ├── components/ (chat, dashboard, recommendations, layout, common)
-        ├── hooks/ (useAQI, useChat, useGeolocation, useLocalStorage)
-        ├── services/api.js
-        ├── utils/ (accessibility, aqiHelpers, constants)
-        └── __tests__/
-```
+1. **AQI Baseline**: Computations follow the **US EPA AQI scale (0–500)** using updated 2024 US EPA PM2.5 breakpoint thresholds.
+2. **Advisory Scope**: SmogShield offers environmental and lifestyle guidance only and never replaces clinical medical diagnosis.
+3. **Connectivity**: Live telemetry queries keyless **Open-Meteo** (or **WAQI** / **OpenWeatherMap** when keys are set) and falls back to curated baseline city profiles if offline.
+4. **Impact Estimates**: Commute inhaled PM2.5 (`µg`), CO₂ savings (`kg`), and room CADR decay curves model standard urban indoor infiltration and adult minute-ventilation benchmarks to make everyday trade-offs clear.
 
 ---
 

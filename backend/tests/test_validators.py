@@ -94,3 +94,37 @@ def test_effective_aqi_shifts_for_sensitive_household():
     )
     assert get_effective_aqi_for_profile(110, profile) == 170
     assert get_effective_aqi_for_profile(110, UserProfile(city="Delhi")) == 110
+
+
+@pytest.mark.parametrize(
+    ("pollutant", "conc", "min_idx", "max_idx"),
+    [
+        (PollutantType.PM25, 8.0, 0, 50),
+        (PollutantType.PM25, 25.0, 51, 100),
+        (PollutantType.PM25, 45.0, 101, 150),
+        (PollutantType.PM25, 95.0, 151, 200),
+        (PollutantType.PM25, 175.0, 201, 300),
+        (PollutantType.PM25, 300.0, 301, 500),
+        (PollutantType.PM10, 40.0, 0, 50),
+        (PollutantType.PM10, 200.0, 101, 150),
+        (PollutantType.PM10, 450.0, 301, 500),
+    ],
+)
+def test_epa_sub_index_ranges(
+    pollutant: PollutantType, conc: float, min_idx: int, max_idx: int
+):
+    idx = calculate_sub_index(pollutant, conc)
+    assert idx is not None
+    assert min_idx <= idx <= max_idx
+
+
+def test_all_pollutant_sub_indices_and_caps():
+    assert calculate_sub_index(PollutantType.PM25, 650.0) == 500
+    assert calculate_sub_index(PollutantType.PM25, None) is None
+    assert calculate_sub_index(PollutantType.PM10, 100.0) is not None
+    assert calculate_sub_index(PollutantType.O3, 120.0) is not None
+    assert calculate_sub_index(PollutantType.NO2, 150.0) is not None
+    assert calculate_sub_index(PollutantType.SO2, 140.0) is not None
+    assert calculate_sub_index(PollutantType.CO, 8.0) is not None
+    assert calculate_overall_aqi(PollutantDetails()) == (50, "pm25")
+

@@ -139,3 +139,28 @@ def test_aqi_and_recommendations_routes_integration(app, client):
     assert res_rec.status_code == 200
     assert res_rec.json()["effective_aqi"] > 180
 
+
+@pytest.mark.asyncio
+async def test_weather_service_openweathermap_and_dispersion_levels():
+    owm_settings = Settings(openweather_api_key="test-key", app_env="test")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "main": {"temp": 22.0, "humidity": 50},
+                "wind": {"speed": 4.5},
+                "weather": [{"description": "clear sky"}],
+            },
+        )
+
+    transport = httpx.MockTransport(handler)
+    service = WeatherService(settings=owm_settings)
+    async with httpx.AsyncClient(transport=transport) as http_client:
+        weather = await service.get_weather("London", client=http_client)
+
+    assert weather.data_source == "openweathermap"
+    assert weather.wind_speed_kmh == 16.2
+    assert weather.smog_trapping_risk == "low"
+
+

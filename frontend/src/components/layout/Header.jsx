@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import {
+  Contrast,
   MapPin,
   Moon,
   Search,
   ShieldCheck,
   SlidersHorizontal,
   Sun,
+  Type,
 } from 'lucide-react';
 import { POPULAR_CITIES } from '../../utils/constants.js';
 import { getAQIMetadata } from '../../utils/aqiHelpers.js';
@@ -17,12 +19,24 @@ export function Header({
   onUseGeolocation,
   locating,
   aqiSnapshot,
-  darkMode,
-  onToggleDarkMode,
+  themeMode = 'light',
+  onCycleTheme,
+  largeText = false,
+  onToggleLargeText,
   onToggleSidebar,
 }) {
   const [query, setQuery] = useState(city);
   const aqiMeta = aqiSnapshot ? getAQIMetadata(aqiSnapshot.aqi) : null;
+
+  const themeLabel =
+    themeMode === 'high-contrast'
+      ? 'High Contrast'
+      : themeMode === 'dark'
+        ? 'Dark'
+        : 'Light';
+
+  const ThemeIcon =
+    themeMode === 'high-contrast' ? Contrast : themeMode === 'dark' ? Sun : Moon;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -45,33 +59,43 @@ export function Header({
                 SmogShield
               </h1>
               <p className="text-xs text-slate-600 dark:text-slate-400">
-                GenAI Urban Air Quality & Family Advisor
+                GenAI Urban Air Quality &amp; Family Advisor
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 lg:hidden">
+          <div className="flex items-center gap-1.5 lg:hidden">
             <button
               type="button"
               onClick={onToggleSidebar}
               aria-label="Open household context settings"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
             >
               <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
               Profile
             </button>
+            {onToggleLargeText && (
+              <button
+                type="button"
+                onClick={onToggleLargeText}
+                aria-pressed={largeText}
+                aria-label="Toggle large readable text"
+                className={`rounded-lg border px-2 py-1.5 text-xs font-bold ${
+                  largeText
+                    ? 'border-teal-600 bg-teal-700 text-white'
+                    : 'border-slate-300 text-slate-700 dark:border-slate-700 dark:text-slate-200'
+                }`}
+              >
+                Aa+
+              </button>
+            )}
             <button
               type="button"
-              onClick={onToggleDarkMode}
-              aria-pressed={darkMode}
-              aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+              onClick={onCycleTheme}
+              aria-label={`Cycle theme mode (current: ${themeLabel})`}
               className="rounded-lg border border-slate-300 p-2 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              {darkMode ? (
-                <Sun className="h-4 w-4" aria-hidden="true" />
-              ) : (
-                <Moon className="h-4 w-4" aria-hidden="true" />
-              )}
+              <ThemeIcon className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -86,7 +110,7 @@ export function Header({
             <label htmlFor="city-search-input" className="sr-only">
               Enter city name
             </label>
-            <div className="relative flex-1 sm:w-56">
+            <div className="relative flex-1 sm:w-52">
               <Search
                 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
                 aria-hidden="true"
@@ -145,7 +169,7 @@ export function Header({
           </div>
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-2 lg:flex">
           {aqiSnapshot && aqiMeta && (
             <div
               className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${aqiMeta.badgeClass}`}
@@ -157,18 +181,33 @@ export function Header({
             </div>
           )}
 
+          {onToggleLargeText && (
+            <button
+              type="button"
+              onClick={onToggleLargeText}
+              aria-pressed={largeText}
+              aria-label="Toggle large readable text"
+              title="Large text accessibility mode"
+              className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-2 text-xs font-bold transition ${
+                largeText
+                  ? 'border-teal-600 bg-teal-700 text-white'
+                  : 'border-slate-300 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800'
+              }`}
+            >
+              <Type className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>Aa+</span>
+            </button>
+          )}
+
           <button
             type="button"
-            onClick={onToggleDarkMode}
-            aria-pressed={darkMode}
-            aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
-            className="rounded-xl border border-slate-300 p-2 text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+            onClick={onCycleTheme}
+            aria-label={`Cycle theme mode (current: ${themeLabel})`}
+            title={`Theme: ${themeLabel}`}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 px-2.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            {darkMode ? (
-              <Sun className="h-4 w-4" aria-hidden="true" />
-            ) : (
-              <Moon className="h-4 w-4" aria-hidden="true" />
-            )}
+            <ThemeIcon className="h-4 w-4" aria-hidden="true" />
+            <span>{themeLabel}</span>
           </button>
         </div>
       </div>

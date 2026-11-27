@@ -72,3 +72,37 @@ def test_recommendations_endpoint_returns_personalized_plan(app, client):
     assert data["effective_aqi"] > 220
     assert len(data["indoor_hacks"]) >= 3
     assert len(data["alternatives"]) >= 2
+
+
+def test_recommendation_engine_covers_purifier_owner_walk_bike_and_house():
+    engine = RecommendationEngine()
+    snapshot = make_snapshot(city="Kanpur", aqi=215, pm25=140.0)
+    profile = UserProfile(
+        city="Kanpur",
+        family_members=2,
+        has_elderly=True,
+        commute_type=CommuteType.WALK_BIKE,
+        home_type=HomeType.INDEPENDENT_HOUSE,
+        has_air_purifier=True,
+        budget=BudgetLevel.HIGH,
+    )
+    res = engine.generate(snapshot, profile)
+    assert any("Optimize existing air purifier" in h.title for h in res.indoor_hacks)
+    assert any("enclosed electric transit" in a.title for a in res.alternatives)
+    assert any("exterior door thresholds" in h.description for h in res.indoor_hacks)
+    assert any(hp.id == "health-action-plan" for hp in res.health_protections)
+
+
+def test_recommendation_engine_medium_budget_suggests_clean_air_sanctuary():
+    engine = RecommendationEngine()
+    snapshot = make_snapshot(city="Patna", aqi=165, pm25=90.0)
+    profile = UserProfile(
+        city="Patna",
+        has_air_purifier=False,
+        budget=BudgetLevel.MEDIUM,
+        commute_type=CommuteType.PUBLIC_TRANSIT,
+    )
+    res = engine.generate(snapshot, profile)
+    assert any("Clean Air Sanctuary" in h.title for h in res.indoor_hacks)
+    assert res.effective_aqi == 165
+
