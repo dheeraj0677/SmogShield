@@ -62,7 +62,10 @@ export default function App() {
   const handleUseGeolocation = async () => {
     try {
       const coords = await requestCoordinates();
-      await loadByCoordinates(coords.latitude, coords.longitude, userProfile);
+      const snapshot = await loadByCoordinates(coords.latitude, coords.longitude, userProfile);
+      if (snapshot?.resolved_city) {
+        handleCityChange(snapshot.resolved_city);
+      }
     } catch {
       // Error surfaced via geoError banner
     }

@@ -14,6 +14,7 @@ from services.aqi_providers import (
 )
 from services.cache_service import TTLCache
 from services.open_meteo_aqi import fetch_open_meteo_aqi
+from services.reverse_geocode import reverse_geocode
 from services.weather_service import WeatherService
 from utils.aqi_calculator import calculate_overall_aqi, get_aqi_category
 from utils.constants import CITY_FALLBACK_PROFILES
@@ -102,16 +103,25 @@ class AQIService:
         close_client = client is None
         http_client = client or httpx.AsyncClient(timeout=self._settings.request_timeout_seconds)
         try:
+            # Reverse geocode to get a human-readable city name
+            resolved_name = await reverse_geocode(latitude, longitude, http_client)
+            display_name = resolved_name or label
+
             snapshot = None
             if self._settings.has_google_aqi:
                 snapshot = await fetch_google_air_quality(
-                    label, label, "", latitude, longitude,
+                    display_name, display_name, "", latitude, longitude,
                     self._settings, self._weather_service, http_client,
                 )
             if snapshot is None:
                 snapshot = await fetch_open_meteo_aqi(
-                    label, label, "", latitude, longitude, self._weather_service, http_client
+                    display_name, display_name, "", latitude, longitude, self._weather_service, http_client
                 )
+            if snapshot is None:
+                raise ExternalServiceError(
+                    f"Unable to retrieve air quality data for coordinates ({latitude}, {longitude})."
+                )
+            snapshot = snapshot.model_copy(update={"resolved_city": display_name})
             self._cache.set(cache_key, snapshot)
             return snapshot
         finally:

@@ -35,8 +35,10 @@ export function useAQI(userProfile) {
       if (recData) {
         setRecommendations(recData);
       }
+      return snapshot;
     } catch (err) {
       setError(err.message || 'Unable to fetch air quality for your coordinates.');
+      return null;
     } finally {
       setLoading(false);
     }
