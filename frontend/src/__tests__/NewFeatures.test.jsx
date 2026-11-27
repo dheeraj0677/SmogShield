@@ -135,8 +135,8 @@ describe('CommunityHub & Multilingual RTL Advisories', () => {
         onUseGeolocation={vi.fn()}
         locating={false}
         aqiSnapshot={{ aqi: 210 }}
-        themeMode="light"
-        onCycleTheme={vi.fn()}
+        darkMode={false}
+        onToggleDarkMode={vi.fn()}
         largeText={false}
         onToggleLargeText={vi.fn()}
         onToggleSidebar={vi.fn()}
@@ -155,9 +155,9 @@ describe('CommunityHub & Multilingual RTL Advisories', () => {
 });
 
 describe('Header Accessibility Controls', () => {
-  it('supports theme cycling and large-text mode toggles', async () => {
+  it('supports dark/light mode and large-text mode toggles', async () => {
     const user = userEvent.setup();
-    const onCycleTheme = vi.fn();
+    const onToggleDarkMode = vi.fn();
     const onToggleLargeText = vi.fn();
 
     render(
@@ -167,17 +167,17 @@ describe('Header Accessibility Controls', () => {
         onUseGeolocation={vi.fn()}
         locating={false}
         aqiSnapshot={{ aqi: 210 }}
-        themeMode="high-contrast"
-        onCycleTheme={onCycleTheme}
+        darkMode={true}
+        onToggleDarkMode={onToggleDarkMode}
         largeText={true}
         onToggleLargeText={onToggleLargeText}
         onToggleSidebar={vi.fn()}
       />
     );
 
-    const themeBtns = screen.getAllByRole('button', { name: /Cycle theme mode/i });
+    const themeBtns = screen.getAllByRole('button', { name: /Switch to light mode/i });
     await user.click(themeBtns[0]);
-    expect(onCycleTheme).toHaveBeenCalled();
+    expect(onToggleDarkMode).toHaveBeenCalled();
 
     const textBtns = screen.getAllByRole('button', { name: /Toggle large readable text/i });
     await user.click(textBtns[0]);

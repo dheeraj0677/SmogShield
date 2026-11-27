@@ -25,7 +25,7 @@
 
 - **Linter**: `npm run lint` (`eslint` + `eslint-plugin-jsx-a11y`) — **0 errors**
 - **Unit & DOM Tests**: `npm test` (`vitest run` + `@testing-library/react`) — **19 / 19 passed** across 5 suites
-- **Production Build**: `npm run build` (`vite build`) — `70.61 kB` gzipped JS, `7.85 kB` gzipped CSS
-- **Browser E2E**: `npx playwright test` (real headless Chrome against live FastAPI + Vite) — **2 / 2 passed** (`6.4s`):
+- **Production Build**: `npm run build` (`vite build`) — `70.47 kB` gzipped JS, `7.76 kB` gzipped CSS
+- **Browser E2E**: `npx playwright test` (real headless Chrome against live FastAPI + Vite) — **2 / 2 passed** (`20.7s`):
   - Full desktop flow: live AQI meter, 24h diurnal sparkline, CADR solver, Dijkstra clean corridor, Urdu RTL community alerts, AI chat submission.
   - Mobile responsive viewport (`390×844`) layout and drawer toggle.

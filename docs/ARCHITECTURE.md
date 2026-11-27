@@ -9,7 +9,7 @@
 │  • Recommendation Tabs (DailyRoutine, IndoorHacks+CADR,              │
 │    TransitPlanner Dijkstra Router, AlternativesList, CommunityHub)   │
 │  • ChatWindow (Grounded GenAI Assistant + Direct Impact Cards)       │
-│  • Accessibility (Light / Dark / High-Contrast OLED, Aa+, .sr-only)  │
+│  • Accessibility (Light / Dark Mode, Aa+ Text, .sr-only SVG twins)    │
 └──────────────────────────────────┬───────────────────────────────────┘
                                    │ REST /api (GZip + CORS)
                                    ▼

@@ -4,8 +4,8 @@
 
 1. **Semantic HTML5 Landmarks & Navigation**:
    - Uses `<header>`, `<aside>`, `<main>`, `<section>`, `<article>`, `<footer>`, `role="tablist"`, `role="tab"`, `role="tabpanel"`, and a keyboard-focusable **Skip to main content** anchor (`SkipToContent.jsx`).
-2. **High-Contrast & Large-Text Accessibility Modes**:
-   - **3-State Theme Switcher (`Header.jsx`, `index.css`)**: Cycles cleanly between **Light**, **Dark**, and **High-Contrast OLED** (`#000000` background, `#ffffff` text, `#facc15` / `#38bdf8` borders exceeding **14:1** contrast).
+2. **Light / Dark Theme & Large-Text Accessibility Modes**:
+   - **Light / Dark Toggle (`Header.jsx`, `index.css`)**: Clean Light and Dark Slate themes with WCAG AA+ contrast across all badges, inputs, and charts.
    - **Large Text (`Aa+`) Mode**: Scales base typography (`18px`) and enforces `44px+` interactive target heights.
 3. **Screen Reader Twins & Live Regions**:
    - `SmogSparkline.jsx` pairs its native SVG 24-hour diurnal graph with an `.sr-only` hourly text breakdown list.

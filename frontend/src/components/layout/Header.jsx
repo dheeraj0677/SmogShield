@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  Contrast,
   MapPin,
   Moon,
   Search,
@@ -19,24 +18,14 @@ export function Header({
   onUseGeolocation,
   locating,
   aqiSnapshot,
-  themeMode = 'light',
-  onCycleTheme,
+  darkMode = false,
+  onToggleDarkMode,
   largeText = false,
   onToggleLargeText,
   onToggleSidebar,
 }) {
   const [query, setQuery] = useState(city);
   const aqiMeta = aqiSnapshot ? getAQIMetadata(aqiSnapshot.aqi) : null;
-
-  const themeLabel =
-    themeMode === 'high-contrast'
-      ? 'High Contrast'
-      : themeMode === 'dark'
-        ? 'Dark'
-        : 'Light';
-
-  const ThemeIcon =
-    themeMode === 'high-contrast' ? Contrast : themeMode === 'dark' ? Sun : Moon;
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -91,11 +80,16 @@ export function Header({
             )}
             <button
               type="button"
-              onClick={onCycleTheme}
-              aria-label={`Cycle theme mode (current: ${themeLabel})`}
+              onClick={onToggleDarkMode}
+              aria-pressed={darkMode}
+              aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
               className="rounded-lg border border-slate-300 p-2 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
             >
-              <ThemeIcon className="h-4 w-4" aria-hidden="true" />
+              {darkMode ? (
+                <Sun className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Moon className="h-4 w-4" aria-hidden="true" />
+              )}
             </button>
           </div>
         </div>
@@ -201,13 +195,23 @@ export function Header({
 
           <button
             type="button"
-            onClick={onCycleTheme}
-            aria-label={`Cycle theme mode (current: ${themeLabel})`}
-            title={`Theme: ${themeLabel}`}
+            onClick={onToggleDarkMode}
+            aria-pressed={darkMode}
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 px-2.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           >
-            <ThemeIcon className="h-4 w-4" aria-hidden="true" />
-            <span>{themeLabel}</span>
+            {darkMode ? (
+              <>
+                <Sun className="h-4 w-4" aria-hidden="true" />
+                <span>Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="h-4 w-4" aria-hidden="true" />
+                <span>Dark</span>
+              </>
+            )}
           </button>
         </div>
       </div>

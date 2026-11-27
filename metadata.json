@@ -16,11 +16,11 @@
     "e2eTestsTotal": 2,
     "e2eTestsPassed": 2,
     "totalTestsPassed": 83,
-    "frontendJsGzipKB": 70.61,
-    "frontendCssGzipKB": 7.85
+    "frontendJsGzipKB": 70.47,
+    "frontendCssGzipKB": 7.76
   },
   "compliance": {
-    "accessibility": "WCAG 2.1 / 2.2 AA (High-Contrast Mode, Large-Text Aa+, .sr-only SVG twins, RTL Urdu)",
+    "accessibility": "WCAG 2.1 / 2.2 AA (Light & Dark Mode, Large-Text Aa+, .sr-only SVG twins, RTL Urdu)",
     "security": "OWASP Top 10 & CWE-209/770/79/798 Hardened (16 KB body limit, 415 check, Rate Limiting, SHA-256 AI Cache, Prompt Injection Guard)"
   }
 }

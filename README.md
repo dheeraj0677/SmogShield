@@ -68,7 +68,7 @@ SmogShield uses a **hybrid deterministic + Generative AI architecture** so envir
 ```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                     CLIENT — React 18 + Vite + Tailwind CSS                  │
-│                     Production Bundle: 70.61 kB JS / 7.85 kB CSS (gzip)      │
+│                     Production Bundle: 70.47 kB JS / 7.76 kB CSS (gzip)      │
 │                                                                              │
 │  • Header & Household Context Sidebar (City/GPS, Theme/High-Contrast, Aa+)   │
 │  • Live AQI Dashboard (EPA Meter, Pollutant Grid, Inversion Risk, SVG Trend) │
@@ -106,7 +106,7 @@ SmogShield uses a **hybrid deterministic + Generative AI architecture** so envir
 - **Clean-Corridor Commute Planner:** Dijkstra pathfinding and 6-mode table quantifying both inhaled `PM2.5` (`µg`) and `CO₂` (`kg`) with optional N95 toggling.
 - **Direct Impact Explainer:** Every suggestion states explicit health exposure reductions and daily carbon savings (`ImpactMeter.jsx`, `MessageBubble.jsx`).
 - **Multilingual Community Hub:** Interactive neighborhood clean-air pledges plus emergency advisories in **English**, **Hindi (`हिन्दी`)**, **Urdu (`اردو` with automatic RTL `dir="rtl"`)**, and **Spanish (`Español`)**.
-- **Inclusive Accessibility:** Light, Dark, and **High-Contrast OLED (`>14:1`)** themes, **`Aa+` Large Text** toggle, keyboard skip links, dual text+color indicators, and `prefers-reduced-motion` support.
+- **Inclusive Accessibility:** Clean Light & Dark themes, **`Aa+` Large Text** toggle, keyboard skip links, dual text+color indicators, and `prefers-reduced-motion` support.
 
 ---
 
@@ -179,9 +179,9 @@ Detailed reports for every evaluation focus area live in [`docs/`](docs/):
 | **Problem Alignment** | Full Challenge 6 coverage | 8-requirement traceability matrix (`REQ-01`–`REQ-08`) | [docs/PROBLEM_ALIGNMENT.md](docs/PROBLEM_ALIGNMENT.md) |
 | **Code Quality** | Clean modular architecture | `ruff check .` (`0` errors), `eslint .` (`0` errors) | [docs/CODE_QUALITY.md](docs/CODE_QUALITY.md) |
 | **Security** | OWASP Top 10 & CWE hardened | `16 KB` cap (`413`), `415` JSON guard, rate limiter (`429`), CSP/COOP, SHA-256 cache, prompt guard | [docs/SECURITY.md](docs/SECURITY.md) |
-| **Efficiency** | Lean footprint & caching | `70.61 kB` JS / `7.85 kB` CSS gzipped, GZip middleware, single-call hourly+current telemetry | [docs/EFFICIENCY.md](docs/EFFICIENCY.md) |
+| **Efficiency** | Lean footprint & caching | `70.47 kB` JS / `7.76 kB` CSS gzipped, GZip middleware, single-call hourly+current telemetry | [docs/EFFICIENCY.md](docs/EFFICIENCY.md) |
 | **Testing** | **83 / 83 tests passing** | `62` Pytest (`91%` coverage) + `19` Vitest + `2` Playwright Chrome E2E | [docs/TESTING.md](docs/TESTING.md) |
-| **Accessibility** | WCAG 2.1 / 2.2 AA | Light/Dark/High-Contrast OLED, `Aa+` Large Text, `.sr-only` twins, RTL Urdu, `jsx-a11y` clean | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
+| **Accessibility** | WCAG 2.1 / 2.2 AA | Light/Dark mode, `Aa+` Large Text, `.sr-only` twins, RTL Urdu, `jsx-a11y` clean | [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
 
 ### Running Verification Commands
 ```bash

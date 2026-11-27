@@ -35,14 +35,12 @@ const PLAN_TABS = [
   { id: 'community', label: 'Community & Alerts', icon: Users2 },
 ];
 
-const THEME_CYCLE = ['light', 'dark', 'high-contrast'];
-
 export default function App() {
   const [userProfile, setUserProfile] = useLocalStorage(
     'smogshield_profile_v1',
     DEFAULT_USER_PROFILE
   );
-  const [themeMode, setThemeMode] = useLocalStorage('smogshield_theme_mode', 'light');
+  const [darkMode, setDarkMode] = useLocalStorage('smogshield_dark_mode', false);
   const [largeText, setLargeText] = useLocalStorage('smogshield_large_text', false);
   const [activeTab, setActiveTab] = useState('routine');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -64,19 +62,16 @@ export default function App() {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.toggle('dark', themeMode === 'dark' || themeMode === 'high-contrast');
-    root.classList.toggle('high-contrast', themeMode === 'high-contrast');
-  }, [themeMode]);
+    root.classList.toggle('dark', Boolean(darkMode));
+    root.classList.remove('high-contrast');
+  }, [darkMode]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('large-text', Boolean(largeText));
   }, [largeText]);
 
-  const handleCycleTheme = () => {
-    setThemeMode((prev) => {
-      const idx = THEME_CYCLE.indexOf(prev);
-      return THEME_CYCLE[(idx + 1) % THEME_CYCLE.length];
-    });
+  const handleToggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
   };
 
   const handleCityChange = (nextCity) => {
@@ -108,8 +103,8 @@ export default function App() {
           onUseGeolocation={handleUseGeolocation}
           locating={locating}
           aqiSnapshot={aqiSnapshot}
-          themeMode={themeMode}
-          onCycleTheme={handleCycleTheme}
+          darkMode={darkMode}
+          onToggleDarkMode={handleToggleDarkMode}
           largeText={largeText}
           onToggleLargeText={() => setLargeText((prev) => !prev)}
           onToggleSidebar={() => setSidebarOpen(true)}

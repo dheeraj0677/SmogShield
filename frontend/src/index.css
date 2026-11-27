@@ -79,29 +79,6 @@
   border: 0;
 }
 
-/* High-Contrast Accessible Mode (>14:1 contrast ratio) */
-html.high-contrast body {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-}
-
-html.high-contrast header,
-html.high-contrast footer,
-html.high-contrast aside > div,
-html.high-contrast section,
-html.high-contrast article {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  border-color: #facc15 !important;
-}
-
-html.high-contrast button,
-html.high-contrast input,
-html.high-contrast select,
-html.high-contrast textarea {
-  border-color: #38bdf8 !important;
-}
-
 /* Large-Text / Senior-Friendly Mode */
 html.large-text {
   font-size: 18px;
