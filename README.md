@@ -159,15 +159,6 @@ SmogShield includes a unified multi-stage [`Dockerfile`](Dockerfile) and [`rende
 2. When prompted, enter your `OPENROUTER_API_KEY` (and optionally `GEMINI_API_KEY` / `GOOGLE_AIR_QUALITY_API_KEY`).
 3. Render automatically builds `frontend/dist` + FastAPI, sets `$PORT` and `RENDER_EXTERNAL_URL`, and monitors `/api/health`.
 
-### Option C: Docker Compose
-
-```bash
-docker compose up --build
-```
-
-- Frontend: `http://localhost:3000`
-- Backend API: `http://localhost:8000/api/health`
-
 ---
 
 ## 6. Configuration & Environment Variables
