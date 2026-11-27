@@ -40,6 +40,7 @@ def find_cleanest_corridor(
     }
 
     def _dijkstra(optimize_for: str) -> dict:
+        """Run Dijkstra shortest-path search optimizing either dose or travel time."""
         # Weight is either cumulative exposure dose proxy or travel minutes
         pq: list[tuple[float, str, float, float, list[str]]] = [
             (0.0, "Home", 0.0, 0.0, ["Home"])

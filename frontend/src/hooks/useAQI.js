@@ -5,6 +5,11 @@ import {
   fetchRecommendations,
 } from '../services/api.js';
 
+/**
+ * React hook managing live AQI snapshots and personalized action plans.
+ * @param {object} userProfile - Active household profile and city selection.
+ * @returns {object} AQI state, loading/error flags, and refresh/location loaders.
+ */
 export function useAQI(userProfile) {
   const [aqiSnapshot, setAqiSnapshot] = useState(null);
   const [recommendations, setRecommendations] = useState(null);

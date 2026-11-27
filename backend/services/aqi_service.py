@@ -40,6 +40,7 @@ class AQIService:
         cache: TTLCache | None = None,
         weather_service: WeatherService | None = None,
     ) -> None:
+        """Initialize AQI service with settings, TTL cache, and weather client."""
         self._settings = settings or get_settings()
         self._cache = cache or TTLCache(
             ttl_seconds=self._settings.cache_ttl_seconds,

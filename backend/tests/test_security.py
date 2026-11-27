@@ -121,3 +121,15 @@ def test_render_external_url_included_in_cors(monkeypatch):
     settings = Settings(app_env="production")
     assert "https://smogshield.onrender.com" in settings.cors_origins
 
+
+def test_hardened_cross_origin_and_hsts_headers(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "production")
+    prod_app = create_app(settings=Settings(app_env="production"))
+    prod_client = TestClient(prod_app)
+    resp = prod_client.get("/api/health")
+    assert resp.status_code == 200
+    assert resp.headers["Cross-Origin-Embedder-Policy"] == "require-corp"
+    assert resp.headers["Cross-Origin-Resource-Policy"] == "same-origin"
+    assert resp.headers["X-DNS-Prefetch-Control"] == "off"
+    assert resp.headers["Strict-Transport-Security"] == "max-age=31536000; includeSubDomains"
+

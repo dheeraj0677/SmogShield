@@ -38,6 +38,7 @@ class GeminiService:
         recommendation_engine: RecommendationEngine | None = None,
         cache: TTLCache | None = None,
     ) -> None:
+        """Initialize AI advisor service with settings, engine, and response cache."""
         self._settings = settings or get_settings()
         self._engine = recommendation_engine or RecommendationEngine()
         self._ai_cache = cache or TTLCache(ttl_seconds=600, max_entries=100)

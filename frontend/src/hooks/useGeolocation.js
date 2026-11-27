@@ -1,5 +1,9 @@
 import { useCallback, useState } from 'react';
 
+/**
+ * React hook wrapping browser Geolocation API with loading and error state.
+ * @returns {object} Geolocation status, error setter/clearer, and requestCoordinates.
+ */
 export function useGeolocation() {
   const [locating, setLocating] = useState(false);
   const [geoError, setGeoError] = useState(null);

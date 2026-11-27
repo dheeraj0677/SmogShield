@@ -1,5 +1,7 @@
 """Security headers, payload size guard, and Content-Type enforcement middleware."""
 
+import os
+
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
@@ -24,30 +26,40 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        """Attach defensive security headers and route-scoped CSP to responses."""
         response = await call_next(request)
         is_api = request.url.path.startswith("/api/")
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+        response.headers["X-DNS-Prefetch-Control"] = "off"
         response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        response.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
         response.headers["Permissions-Policy"] = (
             "geolocation=(self), microphone=(), camera=()"
         )
         response.headers["Content-Security-Policy"] = API_CSP if is_api else UI_CSP
+        if os.environ.get("APP_ENV") == "production":
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
         return response
 
 
 class MaxBodySizeMiddleware(BaseHTTPMiddleware):
     """Enforce request body size ceiling and JSON Content-Type on POST endpoints."""
 
-    def __init__(self, app, max_bytes: int = MAX_JSON_BODY_BYTES) -> None:
+    def __init__(self, app: object, max_bytes: int = MAX_JSON_BODY_BYTES) -> None:
+        """Initialize the middleware with a maximum request body size in bytes."""
         super().__init__(app)
         self.max_bytes = max_bytes
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        """Reject non-JSON POSTs and payloads exceeding max_bytes."""
         if request.method == "POST" and request.url.path.startswith("/api/"):
             content_type = request.headers.get("content-type", "").lower()
             if "application/json" not in content_type:

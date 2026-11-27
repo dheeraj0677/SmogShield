@@ -56,6 +56,7 @@ class WeatherService:
     """Fetches current weather and smog dispersion insights for a location."""
 
     def __init__(self, settings: Settings | None = None, cache: TTLCache | None = None) -> None:
+        """Initialize weather service with settings and TTL cache."""
         self._settings = settings or get_settings()
         self._cache = cache or TTLCache(
             ttl_seconds=self._settings.cache_ttl_seconds,

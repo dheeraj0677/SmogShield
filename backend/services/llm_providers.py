@@ -91,6 +91,7 @@ async def call_gemini_api(settings: Settings, enriched_prompt: str) -> str | Non
     """Invoke Google Gemini API safely with timeout and graceful fallback."""
 
     def _sync_invoke() -> str:
+        """Synchronously invoke the Google Gemini SDK generate_content endpoint."""
         client = genai.Client(api_key=settings.gemini_api_key)
         response = client.models.generate_content(
             model=settings.gemini_model,

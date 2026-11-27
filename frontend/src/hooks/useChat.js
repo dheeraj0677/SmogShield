@@ -16,6 +16,12 @@ const INITIAL_WELCOME = {
   aiProvider: 'smogshield',
 };
 
+/**
+ * React hook managing SmogShield AI Advisor conversation state and requests.
+ * @param {string} city - Currently selected city name.
+ * @param {object} userProfile - Household context sent with chat prompts.
+ * @returns {object} Chat messages, sending/error state, sendMessage, and clearChat.
+ */
 export function useChat(city, userProfile) {
   const [messages, setMessages] = useState([INITIAL_WELCOME]);
   const [sending, setSending] = useState(false);

@@ -13,6 +13,7 @@ class SlidingWindowRateLimiter:
     """Thread-safe per-client sliding-window request limiter."""
 
     def __init__(self, window_seconds: int = 60) -> None:
+        """Initialize the sliding-window rate limiter with a window duration."""
         self._window_seconds = window_seconds
         self._hits: dict[str, deque[float]] = defaultdict(deque)
         self._lock = threading.Lock()
@@ -45,11 +46,12 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
     def __init__(
         self,
-        app,
+        app: object,
         chat_limit_per_min: int = 30,
         aqi_limit_per_min: int = 60,
         limiter: SlidingWindowRateLimiter | None = None,
     ) -> None:
+        """Configure per-route rate limits and backing sliding-window limiter."""
         super().__init__(app)
         self.chat_limit = chat_limit_per_min
         self.aqi_limit = aqi_limit_per_min
@@ -58,6 +60,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        """Enforce rate limits on API routes and attach rate-limit headers."""
         path = request.url.path
         if not path.startswith("/api/") or path == "/api/health":
             return await call_next(request)

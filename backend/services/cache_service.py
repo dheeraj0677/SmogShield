@@ -12,6 +12,7 @@ class TTLCache:
     """Bounded LRU + TTL cache with optional SHA-256 key hashing for PII-free lookups."""
 
     def __init__(self, ttl_seconds: int = 900, max_entries: int = 256) -> None:
+        """Initialize bounded LRU cache with default TTL in seconds."""
         self._ttl_seconds = max(1, ttl_seconds)
         self._max_entries = max(1, max_entries)
         self._store: OrderedDict[str, tuple[float, Any]] = OrderedDict()
