@@ -14,9 +14,9 @@ export function PollutantCards({ pollutants = {}, dominantPollutant = 'pm25' }) 
         return (
           <div
             key={key}
-            className={`rounded-xl border p-3 transition ${
+            className={`rounded-xl border p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
               isDominant
-                ? 'border-teal-500 bg-teal-50/50 dark:border-teal-600 dark:bg-teal-950/30'
+                ? 'border-teal-500 bg-teal-50/60 shadow-sm dark:border-teal-600 dark:bg-teal-950/35'
                 : 'border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900'
             }`}
           >

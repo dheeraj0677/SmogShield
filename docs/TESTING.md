@@ -1,6 +1,6 @@
 # Automated Testing & Verification Report — SmogShield
 
-**Total Verified Passing Tests:** **80 / 80 (100% Passing)**  
+**Total Verified Passing Tests:** **81 / 81 (100% Passing)**  
 **Backend Statement Coverage:** **91%** (`1,623` statements across backend)
 
 ---
@@ -24,8 +24,8 @@
 ## 2. Frontend Verification (`ESLint` + `Vitest` + `Playwright`)
 
 - **Linter**: `npm run lint` (`eslint` + `eslint-plugin-jsx-a11y`) — **0 errors**
-- **Unit & DOM Tests**: `npm test` (`vitest run` + `@testing-library/react`) — **16 / 16 passed** across 5 suites
-- **Production Build**: `npm run build` (`vite build`) — `66.15 kB` gzipped JS, `6.17 kB` gzipped CSS
-- **Browser E2E**: `npx playwright test` (real headless Chrome against live FastAPI + Vite) — **2 / 2 passed** (`7.7s`):
+- **Unit & DOM Tests**: `npm test` (`vitest run` + `@testing-library/react`) — **17 / 17 passed** across 5 suites
+- **Production Build**: `npm run build` (`vite build`) — `68.38 kB` gzipped JS, `7.10 kB` gzipped CSS
+- **Browser E2E**: `npx playwright test` (real headless Chrome against live FastAPI + Vite) — **2 / 2 passed** (`16.3s`):
   - Full desktop flow: live AQI meter, 24h diurnal sparkline, CADR solver, Dijkstra clean corridor, Urdu RTL community alerts, AI chat submission.
   - Mobile responsive viewport (`390×844`) layout and drawer toggle.

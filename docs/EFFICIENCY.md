@@ -3,8 +3,8 @@
 ## Measured Production Footprint
 
 - **Frontend Production Bundle (`vite build`)**:
-  - JavaScript: `223.68 kB` raw / **`66.15 kB` gzipped**
-  - CSS: `33.08 kB` raw / **`6.17 kB` gzipped**
+  - JavaScript: `233.34 kB` raw / **`68.38 kB` gzipped**
+  - CSS: `40.60 kB` raw / **`7.10 kB` gzipped**
   - Zero third-party charting libraries (Recharts/Chart.js omitted in favor of native lightweight SVG components in `SmogSparkline.jsx` and `AQIGauge.jsx`).
 - **Git Repository Size**: `< 0.6 MB` tracked (strictly `< 10 MB` rule).
 

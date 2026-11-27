@@ -1,8 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ScrollControls } from '../components/common/ScrollControls.jsx';
 import { SmogSparkline } from '../components/dashboard/SmogSparkline.jsx';
 import { Header } from '../components/layout/Header.jsx';
+import { HeroStrip } from '../components/layout/HeroStrip.jsx';
 import { CADRCalculator } from '../components/recommendations/CADRCalculator.jsx';
 import { CommunityHub } from '../components/recommendations/CommunityHub.jsx';
 import { TransitPlanner } from '../components/recommendations/TransitPlanner.jsx';
@@ -177,5 +179,40 @@ describe('Header Accessibility Controls', () => {
     const textBtns = screen.getAllByRole('button', { name: /Toggle large readable text/i });
     await user.click(textBtns[0]);
     expect(onToggleLargeText).toHaveBeenCalled();
+  });
+});
+
+describe('HeroStrip & ScrollControls', () => {
+  it('renders hotspot carousel, jump links, and triggers city selection & scrolling', async () => {
+    const user = userEvent.setup();
+    const onSelectCity = vi.fn();
+
+    render(
+      <>
+        <ScrollControls />
+        <HeroStrip
+          city="Delhi"
+          aqiSnapshot={{
+            resolved_city: 'Delhi',
+            aqi: 245,
+            pollutants: { pm25: 165 },
+            weather: {
+              wind_speed_kmh: 5.1,
+              smog_trapping_risk: 'high',
+              dispersion_note: 'Calm winds trap winter particulates.',
+            },
+          }}
+          onSelectCity={onSelectCity}
+        />
+      </>
+    );
+
+    expect(screen.getByRole('link', { name: /Live Telemetry & AI/i })).toHaveAttribute(
+      'href',
+      '#overview'
+    );
+    await user.click(screen.getByRole('button', { name: /Scroll hotspot cities right/i }));
+    await user.click(screen.getByRole('button', { name: /Lahore/i }));
+    expect(onSelectCity).toHaveBeenCalledWith('Lahore');
   });
 });

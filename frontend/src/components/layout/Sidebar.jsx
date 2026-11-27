@@ -19,10 +19,12 @@ export function Sidebar({ profile, onChangeProfile, openMobile, onCloseMobile })
     <aside
       aria-label="Household context settings"
       className={`${
-        openMobile ? 'fixed inset-0 z-40 flex bg-slate-950/60 lg:static lg:block lg:bg-transparent' : 'hidden lg:block'
+        openMobile
+          ? 'fixed inset-0 z-40 flex bg-slate-950/60 backdrop-blur-sm lg:static lg:block lg:bg-transparent lg:backdrop-blur-none'
+          : 'hidden lg:sticky lg:top-20 lg:block'
       }`}
     >
-      <div className="h-full w-80 overflow-y-auto border-r border-slate-200 bg-white p-5 shadow-xl lg:h-auto lg:w-full lg:rounded-2xl lg:border lg:shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="custom-scrollbar h-full w-80 overflow-y-auto border-r border-slate-200 bg-white p-5 shadow-xl lg:max-h-[calc(100vh-6rem)] lg:w-full lg:rounded-2xl lg:border lg:shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center justify-between border-b border-slate-200 pb-3 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" aria-hidden="true" />

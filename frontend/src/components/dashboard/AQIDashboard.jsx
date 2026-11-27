@@ -2,7 +2,6 @@ import { RefreshCw } from 'lucide-react';
 import { AQIGauge } from './AQIGauge.jsx';
 import { HealthTips } from './HealthTips.jsx';
 import { PollutantCards } from './PollutantCards.jsx';
-import { SmogSparkline } from './SmogSparkline.jsx';
 import { WeatherCard } from './WeatherCard.jsx';
 
 export function AQIDashboard({ snapshot, recommendations, loading, onRefresh }) {
@@ -62,8 +61,6 @@ export function AQIDashboard({ snapshot, recommendations, loading, onRefresh }) 
           </div>
         </div>
       </div>
-
-      <SmogSparkline trend={snapshot.hourly_trend} city={snapshot.resolved_city} />
     </section>
   );
 }
